@@ -1,0 +1,7 @@
+QPushButton#pushButton{background-image: url(./Image/EnergyIcon.png);width:100px;height:100px;padding-top:0px;border:0px;}
+QPushButton#pushButton:hover{background-image:url(./Image/RecycleIcon.png);}
+QPushButton#pushButton:pressed{background-image:url(./Image/RideIcon.png);}
+
+QPushButton#pushButton_2{background-image: url(./Image/EnergyIcon.png.png);width:55px;height:55px;padding-top:0px;border:0px;margin-right:15px;}
+QPushButton#pushButton_2:hover{background-image:url(./Image/RecycleIcon.png);}
+ 
