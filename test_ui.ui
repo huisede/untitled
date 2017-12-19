@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1228</width>
-    <height>764</height>
+    <width>1002</width>
+    <height>717</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -28,25 +28,10 @@
     <item row="1" column="0">
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="page">
        <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="1">
-         <widget class="QGroupBox" name="groupBox_2">
-          <property name="title">
-           <string>GroupBox</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_3">
-           <item row="1" column="0">
-            <widget class="QGraphicsView" name="graphicsView"/>
-           </item>
-           <item row="0" column="0">
-            <widget class="QTextBrowser" name="textBrowser"/>
-           </item>
-          </layout>
-         </widget>
-        </item>
         <item row="0" column="0">
          <widget class="QGroupBox" name="groupBox">
           <property name="title">
@@ -61,6 +46,19 @@
                 <string>Add CombBox</string>
                </property>
               </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
              </item>
              <item>
               <widget class="QLabel" name="label">
@@ -113,6 +111,34 @@
               <widget class="QComboBox" name="comboBox_5"/>
              </item>
             </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QGroupBox" name="groupBox_2">
+          <property name="title">
+           <string>GroupBox</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_3">
+           <item row="1" column="0">
+            <widget class="QGraphicsView" name="graphicsView"/>
+           </item>
+           <item row="0" column="0">
+            <widget class="QTextBrowser" name="textBrowser">
+             <property name="minimumSize">
+              <size>
+               <width>400</width>
+               <height>80</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>3000</width>
+               <height>100</height>
+              </size>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -374,7 +400,7 @@
           <property name="currentIndex">
            <number>0</number>
           </property>
-          <widget class="QWidget" name="page_4">
+          <widget class="QWidget" name="page_5">
            <layout class="QGridLayout" name="gridLayout_9">
             <item row="1" column="1" rowspan="3">
              <widget class="QGraphicsView" name="graphicsView_3"/>
@@ -413,7 +439,419 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="page_5"/>
+          <widget class="QWidget" name="page_6"/>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="page_4">
+       <layout class="QGridLayout" name="gridLayout_6">
+        <item row="0" column="0">
+         <widget class="QTreeWidget" name="treeWidget_3">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <column>
+           <property name="text">
+            <string>评价工况</string>
+           </property>
+          </column>
+          <item>
+           <property name="text">
+            <string>DQ</string>
+           </property>
+           <item>
+            <property name="text">
+             <string>KeyOn/Off</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Idle</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>PRND</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Launch</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>TipIn</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>DownShifting</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>RisingPedal</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>ConstantAccStart</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>ConstantSpeed</string>
+            </property>
+           </item>
+          </item>
+          <item>
+           <property name="text">
+            <string>Energy</string>
+           </property>
+           <item>
+            <property name="text">
+             <string>ConstantSpeedFC</string>
+            </property>
+           </item>
+          </item>
+          <item>
+           <property name="text">
+            <string>HVAC</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Ride</string>
+           </property>
+           <item>
+            <property name="text">
+             <string>SystemGain</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>ConstantSpeed</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>RoughRoad</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>SinRoad</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>TarStripRoad</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>RDShortWaveRoad</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>LongDongRoad</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>StepRoad</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>DecelerationStrip</string>
+            </property>
+           </item>
+          </item>
+          <item>
+           <property name="text">
+            <string>NVH</string>
+           </property>
+           <item>
+            <property name="text">
+             <string>KeyOn/Off</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Idle</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Launch</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>TipIn</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>DownShifting</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>ConstantGearAcc</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>ConstantSpeed</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>GroovedCementRoad</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>RoughRoad</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>DecelerationStrip</string>
+            </property>
+           </item>
+          </item>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QGroupBox" name="groupBox_3">
+          <property name="title">
+           <string>GroupBox</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_8">
+           <item row="0" column="0">
+            <widget class="QStackedWidget" name="stackedWidget_3">
+             <property name="currentIndex">
+              <number>1</number>
+             </property>
+             <widget class="QWidget" name="page_9">
+              <layout class="QGridLayout" name="gridLayout_10">
+               <item row="0" column="0">
+                <layout class="QGridLayout" name="gridLayout_11">
+                 <item row="4" column="1">
+                  <widget class="QLabel" name="label_9">
+                   <property name="text">
+                    <string>TextLabel</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QLabel" name="label_7">
+                   <property name="text">
+                    <string>TextLabel</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QLabel" name="label_8">
+                   <property name="text">
+                    <string>TextLabel</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="4">
+                  <spacer name="horizontalSpacer_4">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item row="5" column="2">
+                  <widget class="QCheckBox" name="checkBox_2">
+                   <property name="text">
+                    <string>CheckBox</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="2">
+                  <widget class="QCheckBox" name="checkBox">
+                   <property name="text">
+                    <string>CheckBox</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <spacer name="horizontalSpacer_2">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item row="6" column="2">
+                  <spacer name="verticalSpacer_3">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item row="1" column="2">
+                  <widget class="QComboBox" name="comboBox_6"/>
+                 </item>
+                 <item row="2" column="2">
+                  <widget class="QComboBox" name="comboBox_7"/>
+                 </item>
+                 <item row="0" column="2">
+                  <spacer name="verticalSpacer_2">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QLabel" name="label_6">
+                   <property name="text">
+                    <string>TextLabel</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="3">
+                  <spacer name="horizontalSpacer_3">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>80</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item row="7" column="2">
+                  <spacer name="verticalSpacer_4">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item row="4" column="2">
+                  <widget class="QGroupBox" name="groupBox_4">
+                   <property name="title">
+                    <string>GroupBox</string>
+                   </property>
+                   <layout class="QGridLayout" name="gridLayout_12">
+                    <item row="2" column="0">
+                     <widget class="QRadioButton" name="radioButton_3">
+                      <property name="text">
+                       <string>RadioButton</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QRadioButton" name="radioButton_2">
+                      <property name="text">
+                       <string>RadioButton</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QRadioButton" name="radioButton">
+                      <property name="text">
+                       <string>RadioButton</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="0">
+                     <widget class="QRadioButton" name="radioButton_4">
+                      <property name="text">
+                       <string>RadioButton</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="5" column="1">
+                  <widget class="QLabel" name="label_10">
+                   <property name="text">
+                    <string>TextLabel</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="page_10">
+              <layout class="QGridLayout" name="gridLayout_14">
+               <item row="0" column="0">
+                <layout class="QGridLayout" name="gridLayout_13">
+                 <item row="0" column="0">
+                  <widget class="QPushButton" name="pushButton_4">
+                   <property name="text">
+                    <string>PushButton</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QCheckBox" name="checkBox_3">
+                   <property name="text">
+                    <string>CheckBox</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QCheckBox" name="checkBox_4">
+                   <property name="text">
+                    <string>CheckBox</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>
@@ -427,7 +865,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1228</width>
+     <width>1002</width>
      <height>23</height>
     </rect>
    </property>
@@ -479,6 +917,9 @@
    <addaction name="actionOveralwidget"/>
    <addaction name="actionDataEdit"/>
    <addaction name="actionRatingDetails"/>
+   <addaction name="actionSettings"/>
+   <addaction name="actionComparison"/>
+   <addaction name="actionDelete"/>
    <addaction name="separator"/>
    <addaction name="separator"/>
   </widget>
@@ -539,8 +980,8 @@
   </action>
   <action name="actionOveralwidget">
    <property name="icon">
-    <iconset resource="../VI_Project_Main/IconSource.qrc">
-     <normaloff>:/Icon/Image/EnergyIcon.png</normaloff>:/Icon/Image/EnergyIcon.png</iconset>
+    <iconset resource="../test_OS/myimages.qrc">
+     <normaloff>:/image/images/badge.png</normaloff>:/image/images/badge.png</iconset>
    </property>
    <property name="text">
     <string>Overallwidget</string>
@@ -554,8 +995,8 @@
   </action>
   <action name="actionRatingDetails">
    <property name="icon">
-    <iconset resource="../VI_Project_Main/IconSource.qrc">
-     <normaloff>:/Icon/Image/RideIcon.png</normaloff>:/Icon/Image/RideIcon.png</iconset>
+    <iconset resource="../test_OS/myimages.qrc">
+     <normaloff>:/image/images/detail2.png</normaloff>:/image/images/detail2.png</iconset>
    </property>
    <property name="text">
     <string>RatingDetails</string>
@@ -569,16 +1010,44 @@
   </action>
   <action name="actionDataEdit">
    <property name="icon">
-    <iconset resource="../VI_Project_Main/IconSource.qrc">
-     <normaloff>:/Icon/Image/Set_name.png</normaloff>:/Icon/Image/Set_name.png</iconset>
+    <iconset resource="../test_OS/myimages.qrc">
+     <normaloff>:/image/images/wave.png</normaloff>:/image/images/wave.png</iconset>
    </property>
    <property name="text">
     <string>DataEdit</string>
    </property>
   </action>
+  <action name="actionSettings">
+   <property name="icon">
+    <iconset resource="../test_OS/myimages.qrc">
+     <normaloff>:/image/images/setup-50.png</normaloff>:/image/images/setup-50.png</iconset>
+   </property>
+   <property name="text">
+    <string>Settings</string>
+   </property>
+  </action>
+  <action name="actionComparison">
+   <property name="icon">
+    <iconset resource="../test_OS/myimages.qrc">
+     <normaloff>:/image/images/compare01.png</normaloff>:/image/images/compare01.png</iconset>
+   </property>
+   <property name="text">
+    <string>Comparison</string>
+   </property>
+  </action>
+  <action name="actionDelete">
+   <property name="icon">
+    <iconset resource="../test_OS/myimages.qrc">
+     <normaloff>:/image/images/trash.png</normaloff>:/image/images/trash.png</iconset>
+   </property>
+   <property name="text">
+    <string>Delete</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="../VI_Project_Main/IconSource.qrc"/>
+  <include location="../test_OS/myimages.qrc"/>
  </resources>
  <connections/>
 </ui>

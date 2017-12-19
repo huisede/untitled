@@ -36,11 +36,13 @@ class SystemGainDocker:
 
 class MyFigureCanvas(FigureCanvas):
 
-    def __init__(self, parent=None, width=10, height=10, dpi=100, plot_type='3d', data=[], para1=[]):
+    # def __init__(self, parent=None, width=10, height=10, dpi=100, plot_type='3d', data=[], para1=[]):
+    def __init__(self, parent=None, width=10, height=10, dpi=100, plot_type='3d', **kwargs):
         fig = Figure(figsize=(width, height), dpi=100)
         super(MyFigureCanvas, self).__init__(fig)
-        self.data = data
-        self.parameter1 = para1
+        self.kwargs = kwargs
+        # self.data = data
+        # self.parameter1 = para1
         # FigureCanvas.__init__(self, fig)  # 初始化父类   堆栈溢出问题！
         # self.setParent(parent)
         if plot_type == '2d':
@@ -51,10 +53,10 @@ class MyFigureCanvas(FigureCanvas):
             self.axes = fig.add_subplot(111, polar=True)
 
     def plot_acc_response_(self):
-        self.xdata = self.data[1]
-        self.ydata = self.data[0]
-        self.zdata = self.data[2]
-        self.pedal_avg = self.parameter1
+        self.xdata = self.kwargs['data'][1]
+        self.ydata = self.kwargs['data'][0]
+        self.zdata = self.kwargs['data'][2]
+        self.pedal_avg = self.kwargs['pedal_avg']
         for i in range(0, len(self.xdata)):
             self.axes.plot(self.xdata[i], self.ydata[i], self.zdata[i], label=int(round(self.pedal_avg[i] / 5) * 5))
             self.axes.legend(bbox_to_anchor=(1.02, 1), loc=1, borderaxespad=0)
@@ -64,9 +66,9 @@ class MyFigureCanvas(FigureCanvas):
         self.axes.set_title('Acc-3D Map', fontsize=12)
 
     def plot_launch_(self):
-        self.xdata = self.data[2]
-        self.ydata = self.data[1]
-        self.pedal = self.data[0]
+        self.xdata = self.kwargs['data'][2]
+        self.ydata = self.kwargs['data'][1]
+        self.pedal = self.kwargs['data'][0]
         for i in range(0, len(self.xdata)):
             self.axes.plot(self.xdata[i], self.ydata[i], label=int(round(np.mean(self.pedal[i]) / 5) * 5))
             self.axes.legend()
@@ -76,8 +78,8 @@ class MyFigureCanvas(FigureCanvas):
         self.axes.set_title('Launch', fontsize=12)
 
     def plot_max_acc_(self):
-        self.xdata = self.data
-        self.ydata = self.parameter1
+        self.xdata = self.kwargs['xdata']
+        self.ydata = self.kwargs['ydata']
         self.axes.plot(self.xdata, self.ydata, color='green', linestyle='dashed', marker='o', markerfacecolor='blue',
                        markersize=8)
         self.axes.grid(True, linestyle="--", color="k", linewidth="0.4")
@@ -87,9 +89,9 @@ class MyFigureCanvas(FigureCanvas):
         self.axes.set_title('Acc-Pedal', fontsize=12)
 
     def plot_pedal_map_(self):
-        self.xdata = self.data[1]
-        self.ydata = self.data[2]
-        self.zdata = self.data[0]
+        self.xdata = self.kwargs['data'][1]
+        self.ydata = self.kwargs['data'][2]
+        self.zdata = self.kwargs['data'][0]
         self.axes.scatter(self.xdata, self.ydata, c=self.zdata, marker='o', linewidths=0.1,
                           s=6, cmap=cm.get_cmap('RdYlBu_r'))
         self.axes.grid(True, linestyle="--", color="k", linewidth="0.4")
@@ -104,16 +106,16 @@ class MyFigureCanvas(FigureCanvas):
         self.axes.scatter(x, y, z)
 
     def plot_radar_map_(self):
-        self.theta = self.data
-        self.ydata = self.parameter1
+        self.theta = self.kwargs['theta']
+        self.data = self.kwargs['data']
         # plt.thetagrids(theta*(180/np.pi), labels=labels, fontproperties=myfont)
         self.axes.set_ylim(0, 100)
         # 画雷达图,并填充雷达图内部区域
-        self.axes.plot(self.theta, self.ydata, "bo-", linewidth=2)
-        self.axes.fill(self.theta, self.ydata, color="red", alpha=0.25)
+        self.axes.plot(self.theta, self.data, "bo-", linewidth=2)
+        self.axes.fill(self.theta, self.data, color="red", alpha=0.25)
         self.axes.set_rgrids(np.arange(20, 100, 20), labels=np.arange(20, 100, 20), angle=0)
         self.axes.set_thetagrids(self.theta * (180 / np.pi), labels=np.array(["A", "B", "C", "D", "E", "F"]))
-        self.axes.set_title("雷达图")
+        self.axes.set_title("Radar Plot")
 
 
 class AccResponse(FigureCanvas):

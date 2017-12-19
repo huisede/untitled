@@ -20,14 +20,19 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
         super(MainUiWindow, self).__init__(parent)
         self.setupUi(self)
         self.menu_InputData.triggered.connect(self.load_sysgain_data)
-        self.actionOveralwidget.triggered.connect(lambda: self.change_page(0))
-        self.actionDataEdit.triggered.connect(lambda: self.change_page(1))
-        self.actionRatingDetails.triggered.connect(lambda: self.change_page(2))
+        self.actionOveralwidget.triggered.connect(lambda: self.change_main_page(0))
+        self.actionDataEdit.triggered.connect(lambda: self.change_main_page(1))
+        self.actionRatingDetails.triggered.connect(lambda: self.change_main_page(2))
+        self.actionSettings.triggered.connect(lambda: self.change_main_page(3))
         self.treeWidget.clicked.connect(self.select_tree_nodes)
-        self.pushButton_3.clicked.connect(self.button_clicked)  ###
+        self.treeWidget_3.clicked.connect(self.select_tree3_nodes)
+        self.pushButton_3.clicked.connect(self.button_clicked)  # test
 
-    def change_page(self, index_page):
+    def change_main_page(self, index_page):
         self.stackedWidget.setCurrentIndex(index_page)
+
+    def change_tree_stackedwidgets_page(self, stackedwidgets_id ,index_page):
+        eval('self.stackedWidget_'+str(stackedwidgets_id)+'.setCurrentIndex(index_page)')
 
     def load_sysgain_data(self):
         filepath = QFileDialog.getOpenFileName(self, filter='*.csv')
@@ -40,7 +45,7 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
 
         dr = MyFigureCanvas(width=7, height=5, plot_type='3d',
                             data=self.MainProcess_thread.ax_holder_SG.accresponce.data,
-                            para1=self.MainProcess_thread.ax_holder_SG.accresponce.pedal_avg)
+                            pedal_avg=self.MainProcess_thread.ax_holder_SG.accresponce.pedal_avg)
         dr.plot_acc_response_()
 
         self.scene = QtWidgets.QGraphicsScene()
@@ -51,8 +56,18 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
         self.graphicsView_3.show()
 
     def select_tree_nodes(self):
-        a=self.treeWidget.currentItem().text(0)
+        tree_index = {'DQ': 0, 'Energy': 1}
+        s = self.treeWidget.currentItem().text(0)
+
         pass
+
+    def select_tree3_nodes(self):
+        tree_index = {'DQ': 0, 'Energy': 1}
+        s = self.treeWidget_3.currentItem().text(0)
+        try:
+            self.change_tree_stackedwidgets_page(stackedwidgets_id=3, index_page=tree_index[s])
+        except KeyError as e:  # 防止索引错误
+            print(e)
 
     def add_combo_box(self):
         # button = QPushButton(u'测试', self)
@@ -64,10 +79,10 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
         self.MainProcess_thread.Message_Finish_2.connect(self.show_radar_pictures)
         self.MainProcess_thread.start()
 
-    def show_radar_pictures(self, str):
+    def show_radar_pictures(self):
         dr2 = MyFigureCanvas(width=10, height=5, plot_type='2d-poly',
-                            data=self.MainProcess_thread.ax_holder_radar.theta,
-                            para1=self.MainProcess_thread.ax_holder_radar.data)
+                             theta=self.MainProcess_thread.ax_holder_radar.theta,
+                             data=self.MainProcess_thread.ax_holder_radar.data)
         dr2.plot_radar_map_()
         self.scene = QtWidgets.QGraphicsScene()
         self.scene.addWidget(dr2)
