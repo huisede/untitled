@@ -108,14 +108,26 @@ class MyFigureCanvas(FigureCanvas):
     def plot_radar_map_(self):
         self.theta = self.kwargs['theta']
         self.data = self.kwargs['data']
+        self.legends = self.kwargs['legends']
         # plt.thetagrids(theta*(180/np.pi), labels=labels, fontproperties=myfont)
         self.axes.set_ylim(0, 100)
-        # 画雷达图,并填充雷达图内部区域
-        self.axes.plot(self.theta, self.data, "bo-", linewidth=2)
-        self.axes.fill(self.theta, self.data, color="red", alpha=0.25)
-        self.axes.set_rgrids(np.arange(20, 100, 20), labels=np.arange(20, 100, 20), angle=0)
-        self.axes.set_thetagrids(self.theta * (180 / np.pi), labels=np.array(["A", "B", "C", "D", "E", "F"]))
-        self.axes.set_title("Radar Plot")
+        colour_Bar = ['blue', 'red', 'c', 'royalblue', 'lightcoral', 'yellow', 'lightgreen', 'brown',
+                      'teal', 'orange', 'coral', 'gold', 'lime', 'olive']
+        if self.data.size <= 7:  # 一条数据绘制
+            # 画雷达图,并填充雷达图内部区域
+            self.axes.plot(self.theta, self.data, "o-", color='blue', linewidth=2)
+            self.axes.fill(self.theta, self.data, color="blue", alpha=0.25)
+            self.axes.set_rgrids(np.arange(20, 100, 20), labels=np.arange(20, 100, 20), angle=0)
+            self.axes.set_thetagrids(self.theta * (180 / np.pi), labels=np.array(["A", "B", "C", "D", "E", "F"]))
+            self.axes.set_title("Rating")
+        else:
+            for i in range(self.data.size // 7):
+                self.axes.plot(self.theta, self.data[i], 'o-', color=colour_Bar[i], linewidth=2)
+                self.axes.fill(self.theta, self.data[i], color=colour_Bar[i], alpha=0.25)
+            self.axes.set_rgrids(np.arange(20, 100, 20), labels=np.arange(20, 100, 20), angle=0)
+            self.axes.set_thetagrids(self.theta * (180 / np.pi), labels=np.array(["A", "B", "C", "D", "E", "F"]))
+            self.axes.set_title("Rating Comparison")
+        self.axes.legend(self.legends)
 
 
 class AccResponse(FigureCanvas):
@@ -535,28 +547,34 @@ def sg_main(file_path, feature_index_array=['Time_abs', 'AccelActuPosHSC1', 'Lon
 
 
 class RatingMap(object):
-    def __init__(self, theta, data):
+    def __init__(self, theta, data , legends):
         self.theta = theta
         self.data = data
+        self.legends = legends
 
 
-def rating_map(theta, data):
-    obj = RatingMap(theta, data)
+def rating_map(theta, data, legends):
+    obj = RatingMap(theta, data, legends)
     return obj
 
 
-def radar_plot():
+def radar_plot(data, legends):
     """
     radar plot
     """
     # 生成测试数
-    data = np.array([68, 83, 90, 77, 89, 73])
-    theta = np.linspace(0, 2 * np.pi, len(data), endpoint=False)
-    # 数据预处理
-    data = np.concatenate((data, [data[0]]))
-    theta = np.concatenate((theta, [theta[0]]))
+    data = np.array(data)
+    if data.size == 6:
+        theta = np.linspace(0, 2 * np.pi, len(data), endpoint=False)
+        # 数据预处理
+        data = np.concatenate((data, [data[0]]))
+        theta = np.concatenate((theta, [theta[0]]))
+    else:
+        theta = np.linspace(0, 2 * np.pi, data.shape[1], endpoint=False)
+        data = np.concatenate((data, np.array([data[:, 0]]).T), axis=1)
+        theta = np.concatenate((theta, [theta[0]]))
     # 画图方式
-    obj_ratingmap = rating_map(theta, data)
+    obj_ratingmap = rating_map(theta, data , legends)
 
     return obj_ratingmap
 

@@ -24,8 +24,10 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
         self.actionDataEdit.triggered.connect(lambda: self.change_main_page(1))
         self.actionRatingDetails.triggered.connect(lambda: self.change_main_page(2))
         self.actionSettings.triggered.connect(lambda: self.change_main_page(3))
+        self.actionComparison.triggered.connect(lambda: self.change_main_page(4))
         self.treeWidget.clicked.connect(self.select_tree_nodes)
         self.treeWidget_3.clicked.connect(self.select_tree3_nodes)
+        self.pushButton_compare.clicked.connect(self.compare_radar_pic)
         self.pushButton_3.clicked.connect(self.button_clicked)  # test
 
     def change_main_page(self, index_page):
@@ -79,10 +81,17 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
         self.MainProcess_thread.Message_Finish_2.connect(self.show_radar_pictures)
         self.MainProcess_thread.start()
 
+    @QtCore.pyqtSlot()
+    def compare_radar_pic(self):
+        self.MainProcess_thread = ThreadProcess(method='radar_compare_thread')
+        self.MainProcess_thread.Message_Finish_2.connect(self.show_radar_compare_pictures)
+        self.MainProcess_thread.start()
+
     def show_radar_pictures(self):
         dr2 = MyFigureCanvas(width=10, height=5, plot_type='2d-poly',
                              theta=self.MainProcess_thread.ax_holder_radar.theta,
-                             data=self.MainProcess_thread.ax_holder_radar.data)
+                             data=self.MainProcess_thread.ax_holder_radar.data,
+                             legends=self.MainProcess_thread.ax_holder_radar.legends)
         dr2.plot_radar_map_()
         self.scene = QtWidgets.QGraphicsScene()
         self.scene.addWidget(dr2)
@@ -91,6 +100,18 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
         self.graphicsView.setScene(self.scene)
         self.graphicsView.show()
 
+    def show_radar_compare_pictures(self):
+        dr2 = MyFigureCanvas(width=3.5, height=5, plot_type='2d-poly',
+                             theta=self.MainProcess_thread.ax_holder_radar.theta,
+                             data=self.MainProcess_thread.ax_holder_radar.data,
+                             legends=self.MainProcess_thread.ax_holder_radar.legends)
+        dr2.plot_radar_map_()
+        self.scene = QtWidgets.QGraphicsScene()
+        self.scene.addWidget(dr2)
+        # self.PicToolBar = NavigationBar(dr, self)  # 初始化PicToolBar（本质为Wedgit），绑定到dr这个FigureCanvas上，然后将Toolbar绑到Layout上
+        # self.gridLayout_5.addWidget(self.PicToolBar)
+        self.graphicsView_spider_compare.setScene(self.scene)
+        self.graphicsView_spider_compare.show()
 
 class ThreadProcess(QtCore.QThread):
 
@@ -114,7 +135,15 @@ class ThreadProcess(QtCore.QThread):
 
     def radar_cal_thread(self):
         try:
-            self.ax_holder_radar = radar_plot()
+            self.ax_holder_radar = radar_plot(data=[68, 83, 90, 77, 89, 73], legends=['ZS11'])
+            self.Message_Finish_2.emit('finish')
+        except Exception as e:
+            print(e)
+
+    def radar_compare_thread(self):
+        try:
+            self.ax_holder_radar = radar_plot(data=[[68, 83, 90, 77, 89, 73], [65, 88, 92, 55, 82, 23]],
+                                              legends=['AP31', 'ZS11'])
             self.Message_Finish_2.emit('finish')
         except Exception as e:
             print(e)
