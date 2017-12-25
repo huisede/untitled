@@ -6,13 +6,12 @@
 #  @File     : UImain.py
 #  @Software  : PyCharm
 
-
+import sys
 from PyQt5.QtWidgets import *
 from PyQt5 import QtCore, QtGui, QtWidgets
-from test_ui import Ui_VI_Accessment_System
-from Generate_Figs import *
-from Calculation_function import *
-import sys
+from Ui_VI_Accessment_System import Ui_VI_Accessment_System  # 界面源码
+from Generate_Figs import *  # 绘图函数
+from Calculation_function import *   # 计算函数
 
 
 class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
@@ -152,6 +151,11 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
         self.DatatableView.resizeColumnsToContents()
 
     def show_radar_pictures(self):
+        '''
+        Function to show main rating radar pictures
+
+        :return:
+        '''
         dr2 = MyFigureCanvas(width=10, height=5, plot_type='2d-poly',
                              theta=self.MainProcess_thread.ax_holder_radar.theta,
                              data=self.MainProcess_thread.ax_holder_radar.data,
