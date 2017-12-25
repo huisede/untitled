@@ -1,20 +1,18 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# @Time     : 2017/12/25 18:19
+# @Author  :  LuChao
+# @Site     : 
+# @File     : Calculation_function.py
+# @Software  : PyCharm
+
+
 # -*- coding: utf8 -*-
+
 import numpy as np
 import pandas as pd
-import warnings
 from scipy import interpolate
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationBar
-from matplotlib.figure import Figure
-from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
-import matplotlib
-matplotlib.use("Qt5Agg")
-
-warnings.filterwarnings("ignore")
-# ----------------------------
-# class definition
 
 
 class SystemGain(object):
@@ -22,86 +20,17 @@ class SystemGain(object):
 
 
 class SystemGainDocker:
-    def __init__(self, accresponce, launch, maxacc, pedalmap, shiftmap):
+    def __init__(self, accresponce, launch, maxacc, pedalmap, shiftmap, rawdata):
         self.accresponce = accresponce
         self.launch = launch
         self.maxacc = maxacc
         self.pedalmap = pedalmap
         self.shiftmap = shiftmap
+        self.rawdata = rawdata
 
 
-class MyFigureCanvas(FigureCanvas):
-
-    def __init__(self, parent=None, width=10, height=10, dpi=100, plot_type='3d', data=[], para1=[]):
-        fig = Figure(figsize=(width, height), dpi=100)
-        super(MyFigureCanvas, self).__init__(fig)
-        self.data = data
-        self.parameter1 = para1
-        # FigureCanvas.__init__(self, fig)  # 初始化父类   堆栈溢出问题！
-        # self.setParent(parent)
-        if plot_type == '2d':
-            self.axes = fig.add_subplot(111)
-        elif plot_type == '3d':
-            self.axes = fig.add_subplot(111, projection='3d')
-
-    def plot_acc_response_(self):
-        self.xdata = self.data[1]
-        self.ydata = self.data[0]
-        self.zdata = self.data[2]
-        self.pedal_avg = self.parameter1
-        for i in range(0, len(self.xdata)):
-            self.axes.plot(self.xdata[i], self.ydata[i], self.zdata[i], label=int(round(self.pedal_avg[i] / 5) * 5))
-            self.axes.legend(bbox_to_anchor=(1.02, 1), loc=1, borderaxespad=0)
-        self.axes.set_xlabel('Vehicle Speed (km/h)', fontsize=12)
-        self.axes.set_ylabel('Pedal(%)', fontsize=12)
-        self.axes.set_zlabel('Acc (g)', fontsize=12)
-        self.axes.set_title('Acc-3D Map', fontsize=12)
-
-    def plot_launch_(self):
-        self.xdata = self.data[2]
-        self.ydata = self.data[1]
-        self.pedal = self.data[0]
-        for i in range(0, len(self.xdata)):
-            self.axes.plot(self.xdata[i], self.ydata[i], label=int(round(np.mean(self.pedal[i]) / 5) * 5))
-            self.axes.legend()
-        self.axes.grid(True, linestyle="--", color="k", linewidth="0.4")
-        self.axes.set_xlabel('Time (s)', fontsize=12)
-        self.axes.set_ylabel('Acc (g)', fontsize=12)
-        self.axes.set_title('Launch', fontsize=12)
-
-    def plot_max_acc_(self):
-        self.xdata = self.data
-        self.ydata = self.parameter1
-        self.axes.plot(self.xdata, self.ydata, color='green', linestyle='dashed', marker='o', markerfacecolor='blue',
-                       markersize=8)
-        self.axes.grid(True, linestyle="--", color="k", linewidth="0.4")
-        self.axes.legend()
-        self.axes.set_xlabel('Pedal (%)', fontsize=12)
-        self.axes.set_ylabel('Acc (g)', fontsize=12)
-        self.axes.set_title('Acc-Pedal', fontsize=12)
-
-    def plot_pedal_map_(self):
-        self.xdata = self.data[1]
-        self.ydata = self.data[2]
-        self.zdata = self.data[0]
-        self.axes.scatter(self.xdata, self.ydata, c=self.zdata, marker='o', linewidths=0.1,
-                          s=6, cmap=cm.get_cmap('RdYlBu_r'))
-        self.axes.grid(True, linestyle="--", color="k", linewidth="0.4")
-        self.axes.set_xlabel('Engine Speed (rpm)', fontsize=12)
-        self.axes.set_ylabel('Torque (Nm)', fontsize=12)
-        self.axes.set_title('PedalMap', fontsize=12)
-
-    def test(self):
-        x = [1, 2, 3]
-        y = [2, 3, 5]
-        z = [2, 1, 4]
-        self.axes.scatter(x, y, z)
-
-
-class AccResponse(FigureCanvas):
+class AccResponse(SystemGain):
     def __init__(self, matrix, para1, parent=None, width=10, height=10, dpi=100, plot_type='3d'):
-        self.fig = Figure(figsize=(width, height), dpi=100)
-        super(AccResponse, self).__init__(self.fig)
         self.xdata = matrix[1]
         self.ydata = matrix[0]
         self.zdata = matrix[2]
@@ -109,14 +38,14 @@ class AccResponse(FigureCanvas):
         self.pedal_avg = para1
         self.plot_type = plot_type
 
-    def plot_acc_response(self):
-        if self.plot_type == '2d':
-            self.axes = self.fig.add_subplot(111)
-        elif self.plot_type == '3d':
-            self.axes = self.fig.add_subplot(111, projection='3d')
-        for i in range(0, len(self.xdata)):
-            self.axes.plot(self.xdata[i], self.ydata[i], self.zdata[i], label=int(round(self.pedal_avg[i] / 5) * 5))
-            self.axes.legend()
+    # def plot_acc_response(self):  # 目前做不到先画图，后统一输出，只能在主线程里面同步画
+    #     if self.plot_type == '2d':
+    #         self.axes = self.fig.add_subplot(111)
+    #     elif self.plot_type == '3d':
+    #         self.axes = self.fig.add_subplot(111, projection='3d')
+    #     for i in range(0, len(self.xdata)):
+    #         self.axes.plot(self.xdata[i], self.ydata[i], self.zdata[i], label=int(round(self.pedal_avg[i] / 5) * 5))
+    #         self.axes.legend()
 
 
 class Launch(SystemGain):
@@ -126,17 +55,17 @@ class Launch(SystemGain):
         self.pedal = matrix[0]
         self.data = matrix
 
-    def plot_launch(self):
-        fig2 = plt.figure()
-        ax2 = fig2.add_subplot(111)
-        for i in range(0, len(self.xdata)):
-            ax2.plot(self.xdata[i], self.ydata[i], label=int(round(np.mean(self.pedal[i]) / 5) * 5))
-            ax2.legend()
-        ax2.grid(True, linestyle="--", color="k", linewidth="0.4")
-        axg2 = plt.gca()
-        axg2.set_xlabel('Time (s)', fontsize=12)
-        axg2.set_ylabel('Acc (g)', fontsize=12)
-        axg2.set_title('Launch', fontsize=12)
+    # def plot_launch(self):  # 目前做不到先画图，后统一输出，只能在主线程里面同步画
+    #     fig2 = plt.figure()
+    #     ax2 = fig2.add_subplot(111)
+    #     for i in range(0, len(self.xdata)):
+    #         ax2.plot(self.xdata[i], self.ydata[i], label=int(round(np.mean(self.pedal[i]) / 5) * 5))
+    #         ax2.legend()
+    #     ax2.grid(True, linestyle="--", color="k", linewidth="0.4")
+    #     axg2 = plt.gca()
+    #     axg2.set_xlabel('Time (s)', fontsize=12)
+    #     axg2.set_ylabel('Acc (g)', fontsize=12)
+    #     axg2.set_title('Launch', fontsize=12)
 
 
 class MaxAcc(SystemGain):
@@ -144,18 +73,17 @@ class MaxAcc(SystemGain):
         self.xdata = x
         self.ydata = y
 
-
-    def plot_maxacc(self):
-        fig3 = plt.figure()
-        ax3 = fig3.add_subplot(111)
-        ax3.plot(self.xdata, self.ydata, color='green', linestyle='dashed', marker='o', markerfacecolor='blue',
-                 markersize=8)
-        ax3.grid(True, linestyle="--", color="k", linewidth="0.4")
-        ax3.legend()
-        axg3 = plt.gca()
-        axg3.set_xlabel('Pedal (%)', fontsize=12)
-        axg3.set_ylabel('Acc (g)', fontsize=12)
-        axg3.set_title('Acc-Pedal', fontsize=12)
+    # def plot_maxacc(self):  # 目前做不到先画图，后统一输出，只能在主线程里面同步画
+    #     fig3 = plt.figure()
+    #     ax3 = fig3.add_subplot(111)
+    #     ax3.plot(self.xdata, self.ydata, color='green', linestyle='dashed', marker='o', markerfacecolor='blue',
+    #              markersize=8)
+    #     ax3.grid(True, linestyle="--", color="k", linewidth="0.4")
+    #     ax3.legend()
+    #     axg3 = plt.gca()
+    #     axg3.set_xlabel('Pedal (%)', fontsize=12)
+    #     axg3.set_ylabel('Acc (g)', fontsize=12)
+    #     axg3.set_title('Acc-Pedal', fontsize=12)
 
 
 class PedalMap(SystemGain):
@@ -165,18 +93,18 @@ class PedalMap(SystemGain):
         self.zdata = matrix[0]
         self.data = matrix
 
-    def plot_pedal_map(self):
-        fig4 = plt.figure()
-        ax4 = fig4.add_subplot(111)
-        ax4.legend()
-        fig_pedalmap = ax4.scatter(self.xdata, self.ydata, c=self.zdata, marker='o', linewidths=0.1,
-                                   s=6, cmap=plt.cm.get_cmap('RdYlBu_r'))
-        plt.colorbar(fig_pedalmap)
-        ax4.grid(True, linestyle="--", color="k", linewidth="0.4")
-        axg4 = plt.gca()
-        axg4.set_xlabel('Engine Speed (rpm)', fontsize=12)
-        axg4.set_ylabel('Torque (Nm)', fontsize=12)
-        axg4.set_title('PedalMap', fontsize=12)
+    # def plot_pedal_map(self):  # 目前做不到先画图，后统一输出，只能在主线程里面同步画
+    #     fig4 = plt.figure()
+    #     ax4 = fig4.add_subplot(111)
+    #     ax4.legend()
+    #     fig_pedalmap = ax4.scatter(self.xdata, self.ydata, c=self.zdata, marker='o', linewidths=0.1,
+    #                                s=6, cmap=plt.cm.get_cmap('RdYlBu_r'))
+    #     plt.colorbar(fig_pedalmap)
+    #     ax4.grid(True, linestyle="--", color="k", linewidth="0.4")
+    #     axg4 = plt.gca()
+    #     axg4.set_xlabel('Engine Speed (rpm)', fontsize=12)
+    #     axg4.set_ylabel('Torque (Nm)', fontsize=12)
+    #     axg4.set_title('PedalMap', fontsize=12)
 
 
 class ShiftMap(SystemGain):
@@ -185,21 +113,22 @@ class ShiftMap(SystemGain):
         self.ydata = matrix[1]
         self.gear = matrix[0]
 
-    def plot_shift_map(self):
-        fig5 = plt.figure()
-        ax5 = fig5.add_subplot(111)
-        strLable = ['1->2', '2->3', '3->4', '4->5', '5->6', '6->7', '7->8', '8->9', '9->10']
-        for i in range(1, int(max(self.gear)) + 1):
-            # 选择当前Gear, color=colour[i]
-            ax5.plot(self.xdata[np.where(self.gear == i)], self.ydata[np.where(self.gear == i)]
-                     , marker='o', linestyle='-', linewidth=3, markerfacecolor='blue', markersize=4
-                     , label=strLable[i - 1])
-            ax5.legend()
-        ax5.grid(True, linestyle="--", color="k", linewidth="0.4")
-        axg5 = plt.gca()
-        axg5.set_xlabel('Vehicle Speed (km/h)', fontsize=12)
-        axg5.set_ylabel('Pedal (%)', fontsize=12)
-        axg5.set_title('ShiftMap', fontsize=12)
+    # def plot_shift_map(self):  # 目前做不到先画图，后统一输出，只能在主线程里面同步画
+    #     fig5 = plt.figure()
+    #     ax5 = fig5.add_subplot(111)
+    #     strLable = ['1->2', '2->3', '3->4', '4->5', '5->6', '6->7', '7->8', '8->9', '9->10']
+    #     for i in range(1, int(max(self.gear)) + 1):
+    #         # 选择当前Gear, color=colour[i]
+    #         ax5.plot(self.xdata[np.where(self.gear == i)], self.ydata[np.where(self.gear == i)]
+    #                  , marker='o', linestyle='-', linewidth=3, markerfacecolor='blue', markersize=4
+    #                  , label=strLable[i - 1])
+    #         ax5.legend()
+    #     ax5.grid(True, linestyle="--", color="k", linewidth="0.4")
+    #     axg5 = plt.gca()
+    #     axg5.set_xlabel('Vehicle Speed (km/h)', fontsize=12)
+    #     axg5.set_ylabel('Pedal (%)', fontsize=12)
+    #     axg5.set_title('ShiftMap', fontsize=12)
+
 
 # ----------------------------
 # end of class definition
@@ -250,7 +179,7 @@ def maxacc(acc_data, pedal_cut_index, pedal_avg):
     return obj
 
 
-def pedal_map(pedal_data, enSpd_data, torq_data, pedal_cut_index, pedal_avg,colour):
+def pedal_map(pedal_data, enSpd_data, torq_data, pedal_cut_index, pedal_avg, colour):
     pedal_map = [[], [], []]
     for i in range(0, len(pedal_avg)):
         iTorq = torq_data[pedal_cut_index[0][i]:pedal_cut_index[1][i]]
@@ -262,7 +191,7 @@ def pedal_map(pedal_data, enSpd_data, torq_data, pedal_cut_index, pedal_avg,colo
     return obj
 
 
-def shift_map(pedal_data, gear_data, vehspd_data, pedal_cut_index, pedal_avg,colour):
+def shift_map(pedal_data, gear_data, vehspd_data, pedal_cut_index, pedal_avg, colour):
     shiftMap = [[], [], []]
     for i in range(1, max(gear_data)):
         # Gear上升沿下降沿
@@ -278,7 +207,11 @@ def shift_map(pedal_data, gear_data, vehspd_data, pedal_cut_index, pedal_avg,col
     shiftMap_Data = np.transpose(shiftMap_Sort)
     obj = ShiftMap(shiftMap_Data)
     return obj
+
+
 # *******3-MainCalculation*********
+
+
 def cut_sg_data_pedal(pedal_data):
     # 数据切分
     # edges detection initialize to avoid additional detection of rising edges/trailing edges
@@ -302,7 +235,7 @@ def cut_sg_data_pedal(pedal_data):
     return pedal_cut_index, pedal_avg
 
 
-def plot_maxacc( acc_data, pedal_cut_index, pedal_avg):
+def plot_maxacc(acc_data, pedal_cut_index, pedal_avg):
     # fig3起步特性图
     # acc_start=[0 0 0 0 7.5*100/51 7.5*100/51 7.5*100/51 7.5*100/51;0.02062 0.02709 0.03495 0.04371 0.14767 0.19659 0.24435 0.29176];
     # plot([acc_start(1,4),acc_start(1,5)],[acc_start(2,1),acc_start(2,5)],'b-');
@@ -326,13 +259,14 @@ def plot_maxacc( acc_data, pedal_cut_index, pedal_avg):
     axg3.set_title('Acc-Pedal', fontsize=12)
     return pedal_avg, acc_Ped_Max
 
-def plot_pedal_map(pedal_data, enSpd_data, torq_data, pedal_cut_index, pedal_avg,colour):
+
+def plot_pedal_map(pedal_data, enSpd_data, torq_data, pedal_cut_index, pedal_avg, colour):
     # fig4 PedalMap-Gear
     fig4 = plt.figure()
     ax4 = fig4.add_subplot(111)
     pedal_map = [[], [], []]
-    #sc = plt.scatter(xy, xy, c=z, vmin=0, vmax=20, s=35, cmap=plt.cm.get_cmap('RdYlBu'))
-    #plt.colorbar(sc)
+    # sc = plt.scatter(xy, xy, c=z, vmin=0, vmax=20, s=35, cmap=plt.cm.get_cmap('RdYlBu'))
+    # plt.colorbar(sc)
 
     for i in range(0, len(pedal_avg)):
         iTorq = torq_data[pedal_cut_index[0][i]:pedal_cut_index[1][i]]
@@ -362,7 +296,8 @@ def plot_pedal_map(pedal_data, enSpd_data, torq_data, pedal_cut_index, pedal_avg
     # plt.show()
     return pedal_map
 
-def plot_shift_map(pedal_data, gear_data, vehspd_data, pedal_cut_index, pedal_avg,colour):
+
+def plot_shift_map(pedal_data, gear_data, vehspd_data, pedal_cut_index, pedal_avg, colour):
     # fig5 ShiftMap
     shiftMap = [[], [], []]
     for i in range(1, max(gear_data)):
@@ -393,6 +328,7 @@ def plot_shift_map(pedal_data, gear_data, vehspd_data, pedal_cut_index, pedal_av
     axg5.set_ylabel('Pedal (%)', fontsize=12)
     axg5.set_title('ShiftMap', fontsize=12)
     return shiftMap_Data
+
 
 def arm_interpolate(M):
     P = M[0]
@@ -461,7 +397,14 @@ def arm_interpolate(M):
     return  # A_SG, V_t
 
 
-def main_(file_path,feature_index_array=['Time_abs', 'AccelActuPosHSC1', 'LongAccelG_M', 'VehSpdAvgNonDrvnHSC1','TrEstdGear_TCMHSC1', 'EnSpdHSC1', 'EnToqDrvrReqdExtdRngHSC1']):
+def sg_main(file_path, feature_index_array=['Time_abs', 'AccelActuPosHSC1', 'LongAccelG_M', 'VehSpdAvgNonDrvnHSC1',
+                                            'TrEstdGear_TCMHSC1', 'EnSpdHSC1', 'EnToqDrvrReqdExtdRngHSC1']):
+    '''
+    Plot System Gain result figs
+    :param file_path:
+    :param feature_index_array:
+    :return:
+    '''
     # *******1-GetSysGainData******
     # 获取数据，判断数据类型，不同读取，获取文件名信息，
     SG_csv_Data_ful = pd.read_csv(file_path)
@@ -483,7 +426,7 @@ def main_(file_path,feature_index_array=['Time_abs', 'AccelActuPosHSC1', 'LongAc
     # 数据切分
     pedal_cut_index, pedal_avg = cut_sg_data_pedal(pedal_Data)
     # fig1三维图，增加最大加速度连线以及稳态车速线
-    obj_AccResponse = acc_response(vehSpd_Data, acc_Data, pedal_cut_index, pedal_avg)
+    obj_AccResponse = acc_response(vehSpd_Data, acc_Data, pedal_cut_index, pedal_avg)  # 数据封装
     # # obj_AccResponse.plot_acc_response()
     # # fig2起步图，[5,10,20,30,40,50,100],后续补充判断大油门不是100也画出来,粗细
     obj_Launch = launch(acc_Data, pedal_Data, pedal_cut_index, pedal_avg)
@@ -496,13 +439,46 @@ def main_(file_path,feature_index_array=['Time_abs', 'AccelActuPosHSC1', 'LongAc
     # fig5 ShiftMap
     obj_ShiftMap = shift_map(pedal_Data, gear_Data, vehSpd_Data, pedal_cut_index, pedal_avg, colour_Bar)
     # obj_ShiftMap.plot_shift_map()
-    sysGain_class = SystemGainDocker(obj_AccResponse, obj_Launch, obj_MaxAcc, obj_PedalMap, obj_ShiftMap)
-    return sysGain_class   #, obj_Launch, max_acc_map, pedal_map, shift_map
+    sysGain_class = SystemGainDocker(obj_AccResponse, obj_Launch, obj_MaxAcc, obj_PedalMap, obj_ShiftMap, vehSpd_Data)
+    return sysGain_class
+
+
+class RatingMap(object):
+    def __init__(self, theta, data, legends):
+        self.theta = theta
+        self.data = data
+        self.legends = legends
+
+
+def rating_map(theta, data, legends):
+    obj = RatingMap(theta, data, legends)
+    return obj
+
+
+def radar_plot(data, legends):
+    """
+    radar plot
+    """
+    # 生成测试数
+    data = np.array(data)
+    if data.size == 6:
+        theta = np.linspace(0, 2 * np.pi, len(data), endpoint=False)
+        # 数据预处理
+        data = np.concatenate((data, [data[0]]))
+        theta = np.concatenate((theta, [theta[0]]))
+    else:
+        theta = np.linspace(0, 2 * np.pi, data.shape[1], endpoint=False)
+        data = np.concatenate((data, np.array([data[:, 0]]).T), axis=1)
+        theta = np.concatenate((theta, [theta[0]]))
+    # 画图方式
+    obj_ratingmap = rating_map(theta, data, legends)
+
+    return obj_ratingmap
 
 
 if __name__ == '__main__':
     # *******1-GetSysGainData****** AS22_C16UVV016_SystemGain_20160925_D_M_SL, IP31_L16UOV055_10T_SystemGain_20160225
-    main_('./IP31_L16UOV055_Ride_SyGa_20160225_SL.csv')
+    sg_main('./IP31_L16UOV055_Ride_SyGa_20160225_SL.csv')
     plt.show()
 
     print('Finish!')

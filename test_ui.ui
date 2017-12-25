@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1002</width>
+    <width>1045</width>
     <height>717</height>
    </rect>
   </property>
@@ -25,10 +25,10 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="0">
+    <item row="0" column="0">
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>4</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="page_overallwidget">
        <layout class="QGridLayout" name="gridLayout_2">
@@ -147,43 +147,6 @@
       </widget>
       <widget class="QWidget" name="page_dataedit">
        <layout class="QGridLayout" name="gridLayout_4">
-        <item row="2" column="5">
-         <widget class="QPushButton" name="pushButton">
-          <property name="text">
-           <string>PushButton</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="3" colspan="3">
-         <widget class="QGraphicsView" name="graphicsView_2"/>
-        </item>
-        <item row="2" column="3">
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="1" column="1" rowspan="2">
-         <widget class="Line" name="line">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="4">
-         <widget class="QPushButton" name="pushButton_2">
-          <property name="text">
-           <string>PushButton</string>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="0" rowspan="3">
          <widget class="QTreeWidget" name="treeWidget">
           <property name="sizePolicy">
@@ -369,18 +332,52 @@
           </item>
          </widget>
         </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="page_ratingdetails">
-       <layout class="QGridLayout" name="gridLayout_7">
+        <item row="2" column="4">
+         <widget class="QPushButton" name="pushButton_2">
+          <property name="text">
+           <string>PushButton</string>
+          </property>
+         </widget>
+        </item>
         <item row="1" column="1" rowspan="2">
-         <widget class="Line" name="line_2">
+         <widget class="Line" name="line">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
          </widget>
         </item>
-        <item row="1" column="0" rowspan="4">
+        <item row="2" column="5">
+         <widget class="QPushButton" name="pushButton">
+          <property name="text">
+           <string>PushButton</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="3">
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="3" colspan="3">
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <widget class="QGraphicsView" name="graphicsView_2"/>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="page_ratingdetails">
+       <layout class="QGridLayout" name="gridLayout_7">
+        <item row="0" column="0">
          <widget class="QTreeWidget" name="treeWidget_2">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
@@ -390,25 +387,199 @@
           </property>
           <column>
            <property name="text">
-            <string notr="true">1</string>
+            <string>评价工况</string>
            </property>
           </column>
+          <item>
+           <property name="text">
+            <string>DQ</string>
+           </property>
+           <item>
+            <property name="text">
+             <string>KeyOn/Off</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Idle</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>PRND</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Launch</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>TipIn</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>DownShifting</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>RisingPedal</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>ConstantAccStart</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>ConstantSpeed</string>
+            </property>
+           </item>
+          </item>
+          <item>
+           <property name="text">
+            <string>Energy</string>
+           </property>
+           <item>
+            <property name="text">
+             <string>ConstantSpeedFC</string>
+            </property>
+           </item>
+          </item>
+          <item>
+           <property name="text">
+            <string>HVAC</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Ride</string>
+           </property>
+           <item>
+            <property name="text">
+             <string>SystemGain</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>ConstantSpeed</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>RoughRoad</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>SinRoad</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>TarStripRoad</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>RDShortWaveRoad</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>LongDongRoad</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>StepRoad</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>DecelerationStrip</string>
+            </property>
+           </item>
+          </item>
+          <item>
+           <property name="text">
+            <string>NVH</string>
+           </property>
+           <item>
+            <property name="text">
+             <string>KeyOn/Off</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Idle</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Launch</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>TipIn</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>DownShifting</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>ConstantGearAcc</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>ConstantSpeed</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>GroovedCementRoad</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>RoughRoad</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>DecelerationStrip</string>
+            </property>
+           </item>
+          </item>
          </widget>
         </item>
-        <item row="1" column="2">
+        <item row="0" column="1">
+         <widget class="Line" name="line_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
          <widget class="QStackedWidget" name="stackedWidget_2">
           <property name="currentIndex">
            <number>0</number>
           </property>
           <widget class="QWidget" name="page_5">
            <layout class="QGridLayout" name="gridLayout_9">
-            <item row="1" column="1" rowspan="3">
-             <widget class="QGraphicsView" name="graphicsView_3"/>
-            </item>
             <item row="0" column="1">
              <layout class="QGridLayout" name="gridLayout_5"/>
             </item>
-            <item row="5" column="1" colspan="2">
+            <item row="6" column="1" colspan="2">
              <widget class="QTabWidget" name="tabWidget">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -431,11 +602,20 @@
               </widget>
              </widget>
             </item>
+            <item row="1" column="1" rowspan="4">
+             <widget class="QGraphicsView" name="graphicsView_3"/>
+            </item>
+            <item row="0" column="2">
+             <layout class="QGridLayout" name="gridLayout_17"/>
+            </item>
             <item row="1" column="2" rowspan="2">
              <widget class="QGraphicsView" name="graphicsView_5"/>
             </item>
-            <item row="3" column="2">
+            <item row="4" column="2">
              <widget class="QGraphicsView" name="graphicsView_4"/>
+            </item>
+            <item row="3" column="2">
+             <layout class="QGridLayout" name="gridLayout_21"/>
             </item>
            </layout>
           </widget>
@@ -872,25 +1052,62 @@
          <layout class="QGridLayout" name="gridLayout_15">
           <item row="3" column="1">
            <widget class="QTextBrowser" name="textBrowser_compare">
-            <property name="maximumSize">
+            <property name="minimumSize">
              <size>
               <width>300</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>400</width>
               <height>80</height>
              </size>
             </property>
            </widget>
           </item>
           <item row="4" column="0" colspan="2">
-           <widget class="QGraphicsView" name="graphicsView_spider_compare"/>
+           <widget class="QGraphicsView" name="graphicsView_spider_compare">
+            <property name="minimumSize">
+             <size>
+              <width>300</width>
+              <height>500</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>500</width>
+              <height>800</height>
+             </size>
+            </property>
+           </widget>
           </item>
           <item row="3" column="0">
            <widget class="QGroupBox" name="groupBox_5">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="title">
              <string/>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_3">
              <item>
               <widget class="QPushButton" name="pushButton_compare_2">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>80</width>
+                 <height>40</height>
+                </size>
+               </property>
                <property name="text">
                 <string>导入数据</string>
                </property>
@@ -898,6 +1115,18 @@
              </item>
              <item>
               <widget class="QPushButton" name="pushButton_compare">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>80</width>
+                 <height>40</height>
+                </size>
+               </property>
                <property name="text">
                 <string>对比</string>
                </property>
@@ -919,7 +1148,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1002</width>
+     <width>1045</width>
      <height>23</height>
     </rect>
    </property>
