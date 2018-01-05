@@ -25,13 +25,46 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <property name="spacing">
+     <number>0</number>
+    </property>
     <item row="0" column="0">
      <widget class="QStackedWidget" name="stackedWidget">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="page_overallwidget">
        <layout class="QGridLayout" name="gridLayout_2">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <property name="spacing">
+         <number>0</number>
+        </property>
         <item row="0" column="0">
          <widget class="QGroupBox" name="groupBox">
           <property name="title">
@@ -121,6 +154,21 @@
            <string>GroupBox</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_3">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <property name="horizontalSpacing">
+            <number>0</number>
+           </property>
            <item row="1" column="0">
             <widget class="QGraphicsView" name="graphicsView"/>
            </item>
@@ -147,191 +195,6 @@
       </widget>
       <widget class="QWidget" name="page_dataedit">
        <layout class="QGridLayout" name="gridLayout_4">
-        <item row="0" column="0" rowspan="3">
-         <widget class="QTreeWidget" name="treeWidget">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <column>
-           <property name="text">
-            <string>评价工况</string>
-           </property>
-          </column>
-          <item>
-           <property name="text">
-            <string>DQ</string>
-           </property>
-           <item>
-            <property name="text">
-             <string>KeyOn/Off</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Idle</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>PRND</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Launch</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>TipIn</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>DownShifting</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>RisingPedal</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>ConstantAccStart</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>ConstantSpeed</string>
-            </property>
-           </item>
-          </item>
-          <item>
-           <property name="text">
-            <string>Energy</string>
-           </property>
-           <item>
-            <property name="text">
-             <string>ConstantSpeedFC</string>
-            </property>
-           </item>
-          </item>
-          <item>
-           <property name="text">
-            <string>HVAC</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Ride</string>
-           </property>
-           <item>
-            <property name="text">
-             <string>SystemGain</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>ConstantSpeed</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>RoughRoad</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>SinRoad</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>TarStripRoad</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>RDShortWaveRoad</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>LongDongRoad</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>StepRoad</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>DecelerationStrip</string>
-            </property>
-           </item>
-          </item>
-          <item>
-           <property name="text">
-            <string>NVH</string>
-           </property>
-           <item>
-            <property name="text">
-             <string>KeyOn/Off</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Idle</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Launch</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>TipIn</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>DownShifting</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>ConstantGearAcc</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>ConstantSpeed</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>GroovedCementRoad</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>RoughRoad</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>DecelerationStrip</string>
-            </property>
-           </item>
-          </item>
-         </widget>
-        </item>
         <item row="2" column="4">
          <widget class="QPushButton" name="pushButton_2">
           <property name="text">
@@ -369,14 +232,173 @@
         <item row="1" column="3" colspan="3">
          <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
-           <widget class="QGraphicsView" name="graphicsView_2"/>
+           <widget class="QGraphicsView" name="graphicsView_2">
+            <property name="acceptDrops">
+             <bool>true</bool>
+            </property>
+            <property name="viewportUpdateMode">
+             <enum>QGraphicsView::FullViewportUpdate</enum>
+            </property>
+           </widget>
           </item>
          </layout>
+        </item>
+        <item row="0" column="0" rowspan="3">
+         <widget class="QTreeWidget" name="treeWidget">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="dragDropMode">
+           <enum>QAbstractItemView::DragOnly</enum>
+          </property>
+          <column>
+           <property name="text">
+            <string>评价工况</string>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>8</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="textAlignment">
+            <set>AlignCenter</set>
+           </property>
+          </column>
+          <item>
+           <property name="text">
+            <string>ConstantAccStart</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>ConstantGearAcc</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>ConstantSpeed</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>DownShifting</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>DecelerationStrip</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>GroovedCementRoad</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Idle</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>KeyOn/Off</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Launch</string>
+           </property>
+           <item>
+            <property name="text">
+             <string>AccPed</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../test_OS/myimages.qrc">
+              <normaloff>:/image/images/wave.png</normaloff>:/image/images/wave.png</iconset>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>LongtiAcc</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../test_OS/myimages.qrc">
+              <normaloff>:/image/images/wave.png</normaloff>:/image/images/wave.png</iconset>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>VehicleSpd</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../test_OS/myimages.qrc">
+              <normaloff>:/image/images/wave.png</normaloff>:/image/images/wave.png</iconset>
+            </property>
+           </item>
+          </item>
+          <item>
+           <property name="text">
+            <string>LongDongRoad</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>PRND</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>RDShortWaveRoad</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>RisingPedal</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>RoughRoad</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>SinRoad</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>StepRoad</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>TarStripRoad</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>TipIn</string>
+           </property>
+          </item>
+         </widget>
         </item>
        </layout>
       </widget>
       <widget class="QWidget" name="page_ratingdetails">
        <layout class="QGridLayout" name="gridLayout_7">
+        <item row="0" column="1">
+         <widget class="Line" name="line_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="0">
          <widget class="QTreeWidget" name="treeWidget_2">
           <property name="sizePolicy">
@@ -387,13 +409,27 @@
           </property>
           <column>
            <property name="text">
-            <string>评价工况</string>
+            <string>评价指标</string>
+           </property>
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="textAlignment">
+            <set>AlignCenter</set>
            </property>
           </column>
           <item>
            <property name="text">
             <string>DQ</string>
            </property>
+           <item>
+            <property name="text">
+             <string>SystemGain</string>
+            </property>
+           </item>
            <item>
             <property name="text">
              <string>KeyOn/Off</string>
@@ -459,11 +495,6 @@
            <property name="text">
             <string>Ride</string>
            </property>
-           <item>
-            <property name="text">
-             <string>SystemGain</string>
-            </property>
-           </item>
            <item>
             <property name="text">
              <string>ConstantSpeed</string>
@@ -562,13 +593,6 @@
           </item>
          </widget>
         </item>
-        <item row="0" column="1">
-         <widget class="Line" name="line_2">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="2">
          <widget class="QStackedWidget" name="stackedWidget_2">
           <property name="currentIndex">
@@ -576,10 +600,35 @@
           </property>
           <widget class="QWidget" name="page_5">
            <layout class="QGridLayout" name="gridLayout_9">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <property name="spacing">
+             <number>6</number>
+            </property>
+            <item row="1" column="1" rowspan="3">
+             <widget class="QGraphicsView" name="graphicsView_3">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+             </widget>
+            </item>
             <item row="0" column="1">
              <layout class="QGridLayout" name="gridLayout_5"/>
             </item>
-            <item row="6" column="1" colspan="2">
+            <item row="4" column="1" colspan="3">
              <widget class="QTabWidget" name="tabWidget">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -587,35 +636,49 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>300</height>
+               </size>
+              </property>
               <property name="currentIndex">
                <number>0</number>
               </property>
               <widget class="QWidget" name="tab">
                <attribute name="title">
-                <string>Tab 1</string>
+                <string>加速度响应曲面</string>
                </attribute>
+               <layout class="QGridLayout" name="gridLayout_18">
+                <item row="0" column="0">
+                 <widget class="QTableView" name="tableView_2"/>
+                </item>
+               </layout>
               </widget>
               <widget class="QWidget" name="tab_2">
                <attribute name="title">
-                <string>Tab 2</string>
+                <string>起步特性</string>
+               </attribute>
+              </widget>
+              <widget class="QWidget" name="tab_3">
+               <attribute name="title">
+                <string>香蕉图</string>
                </attribute>
               </widget>
              </widget>
             </item>
-            <item row="1" column="1" rowspan="4">
-             <widget class="QGraphicsView" name="graphicsView_3"/>
-            </item>
             <item row="0" column="2">
              <layout class="QGridLayout" name="gridLayout_17"/>
             </item>
-            <item row="1" column="2" rowspan="2">
-             <widget class="QGraphicsView" name="graphicsView_5"/>
-            </item>
-            <item row="4" column="2">
-             <widget class="QGraphicsView" name="graphicsView_4"/>
-            </item>
-            <item row="3" column="2">
-             <layout class="QGridLayout" name="gridLayout_21"/>
+            <item row="1" column="2" rowspan="3">
+             <widget class="QGraphicsView" name="graphicsView_4">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>

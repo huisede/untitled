@@ -18,8 +18,20 @@ import matplotlib.cm as cm
 
 
 class MyFigureCanvas(FigureCanvas):
+    """
+    Main class of generating figs in GUI using matplot.backend_qt5agg
 
-    # def __init__(self, parent=None, width=10, height=10, dpi=100, plot_type='3d', data=[], para1=[]):
+    Contains:
+    drawing functions
+        plot_acc_response_
+        plot_launch_
+        plot_max_acc_
+        plot_pedal_map_
+        plot_raw_data
+        plot_radar_map_
+    test function
+        test
+    """
     def __init__(self, parent=None, width=10, height=10, dpi=100, plot_type='3d', **kwargs):
         fig = Figure(figsize=(width, height), dpi=100)
         super(MyFigureCanvas, self).__init__(fig)
@@ -36,6 +48,11 @@ class MyFigureCanvas(FigureCanvas):
             self.axes = fig.add_subplot(111, polar=True)
 
     def plot_acc_response_(self):
+        '''
+
+
+        :return:
+        '''
         self.xdata = self.kwargs['data'][1]
         self.ydata = self.kwargs['data'][0]
         self.zdata = self.kwargs['data'][2]
@@ -88,14 +105,21 @@ class MyFigureCanvas(FigureCanvas):
         z = [2, 1, 4]
         self.axes.scatter(x, y, z)
 
-    def plot_raw_data(self):
-        self.raw_data = self.kwargs['raw_data']
+    def plot_raw_data(self, **kwargs):
+        '''
+
+        :param kwargs:
+        :return:
+        '''
+
+        self.raw_data = kwargs['raw_data']  # 注意！！！！
         self.fig_title = self.kwargs['title']
         self.axes.plot(self.raw_data)
         self.axes.set_title(self.fig_title)
         self.axes.set_xlabel('time (s)', fontsize=12)
         self.axes.set_ylabel('VehicleSpd (km/h)', fontsize=12)
         self.axes.grid(True)
+        self.axes.legend(kwargs['legend'])
 
     def plot_radar_map_(self):
         self.theta = self.kwargs['theta']
