@@ -32,6 +32,7 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
         self.treeWidget_3.clicked.connect(self.select_tree3_nodes)
         self.pushButton_compare.clicked.connect(self.compare_radar_pic)
         self.pushButton_3.clicked.connect(self.button_clicked)  # test
+
         self.createContextMenu_RawDataView()
 
     # ---------------------------- 初始化 -----------------------------------------
@@ -40,6 +41,7 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
         self.graphicsView_2.setObjectName("graphicsView_2")
         self.verticalLayout_5.addWidget(self.graphicsView_2)
         self.graphicsView_2.Message_Drag_accept.connect(self.show_data_edit_drag_pictures)   # 拖拽重绘
+        self.graphicsView_2.Message_DoubleClick.connect(self.highlight_signal)  # 双击高亮
 
     # ---------------------------- 右键菜单 -----------------------------------------
 
@@ -52,15 +54,14 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
         self.graphicsView_2.customContextMenuRequested.connect(lambda: self.showContextMenu('graphicsView_2'))
         self.graphicsView_2.contextMenu = QtWidgets.QMenu(self)
         self.graphicsView_2.actionA = self.graphicsView_2.contextMenu.addAction(QtGui.QIcon("images/0.png"), u'|  标记')
+        self.graphicsView_2.actionA.triggered.connect(self.select_marker)
 
         # 添加二级菜单
         self.graphicsView_2.second = self.graphicsView_2.contextMenu.addMenu(QtGui.QIcon("images/0.png"), u"|  二级菜单")
         self.graphicsView_2.actionD = self.graphicsView_2.second.addAction(QtGui.QIcon("images/0.png"), u'|  动作A')
         self.graphicsView_2.actionE = self.graphicsView_2.second.addAction(QtGui.QIcon("images/0.png"), u'|  动作B')
         self.graphicsView_2.actionF = self.graphicsView_2.second.addAction(QtGui.QIcon("images/0.png"), u'|  动作C')
-        # 将动作与处理函数相关联
-        # 这里为了简单，将所有action与同一个处理函数相关联，
-        # 当然也可以将他们分别与不同函数关联，实现不同的功能
+
         return
 
     def createContextMenu_sg_fig_view(self):
@@ -175,11 +176,13 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
         '''
         raw_index = {'VehicleSpd': 'VehSpdAvgNonDrvnHSC1',
                      'AccPed': 'AccelActuPosHSC1',
-                     'LongtiAcc': 'LongAccelG_M'}
+                     'LongtiAcc': 'LongAccelG_M',
+                     'time': 'Time_abs'}
         try:
-            self.dr = MyFigureCanvas(width=16, height=8, plot_type='2d',
+            self.dr = MyFigureCanvas(width=16, height=8, plot_type='2d-multi',
                                      title=dict_in['title'])
-            self.dr.plot_raw_data(raw_data=self.MainProcess_thread.ax_holder_SG.sysGain_class.rawdata[raw_index[dict_in['data']]].tolist(),
+            self.dr.plot_raw_data(time=self.MainProcess_thread.ax_holder_SG.sysGain_class.rawdata[raw_index['time']].tolist(),
+                                  raw_data=self.MainProcess_thread.ax_holder_SG.sysGain_class.rawdata[raw_index[dict_in['data']]].tolist(),
                                   legend=[dict_in['data']])
 
             self.scene = QtWidgets.QGraphicsScene()
@@ -188,6 +191,7 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
                 self.PicToolBar = NavigationBar(self.dr, self)
                 # 初始化PicToolBar（本质为Wedgit），绑定到dr这个FigureCanvas上，然后将Toolbar绑到Layout上
                 self.verticalLayout_5.addWidget(self.PicToolBar)
+
             self.graphicsView_2.setScene(self.scene)
             self.graphicsView_2.setUpdatesEnabled(True)
             self.graphicsView_2.setViewportUpdateMode(0)
@@ -201,12 +205,23 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
     def show_data_edit_drag_pictures(self, dict_in):
         raw_index = {'VehicleSpd': 'VehSpdAvgNonDrvnHSC1',
                      'AccPed': 'AccelActuPosHSC1',
-                     'LongtiAcc': 'LongAccelG_M'}
+                     'LongtiAcc': 'LongAccelG_M',
+                     'time': 'Time_abs'}
         try:
-            self.dr.plot_raw_data(raw_data=self.MainProcess_thread.ax_holder_SG.sysGain_class.rawdata[raw_index[dict_in['data']]].tolist(),
-                              legend=[dict_in['data']])
+            self.PicToolBar.home()
+            self.dr.plot_raw_data(time=self.MainProcess_thread.ax_holder_SG.sysGain_class.rawdata[raw_index['time']].tolist(),
+                                  raw_data=self.MainProcess_thread.ax_holder_SG.sysGain_class.rawdata[raw_index[dict_in['data']]].tolist(),
+                                  legend=[dict_in['data']])
         except Exception as e:
             print(e)
+
+    def select_marker(self):
+        QtCore.Qt.Key_Left
+        pass
+
+    def highlight_signal(self):
+
+        pass
 
     def select_tree_nodes(self):
         # tree_index = {'DQ': 0, 'Energy': 1, 'Launch': 2}
@@ -223,7 +238,7 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
     # -----|--|--|System Gain
     def show_ax_pictures(self):  # System Gain 初始绘图函数
 
-        self.createContextMenu_sg_fig_view()  # 初始化右键菜单
+        # self.createContextMenu_sg_fig_view()
 
         dr = MyFigureCanvas(width=6, height=4, plot_type='3d',
                             data=self.MainProcess_thread.ax_holder_SG.sysGain_class.accresponce.data,
@@ -235,6 +250,8 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
             if self.gridLayout_5.itemAt(0):   # 如果已经有NVbar,删掉后重新捆绑
                 self.gridLayout_5.itemAt(0).widget().deleteLater()
                 self.gridLayout_5.removeWidget(self.gridLayout_5.itemAt(0).widget())
+            else:
+                self.createContextMenu_sg_fig_view()  # 第一次初始化右键菜单，一次把两个canvas的菜单都初始化了  ！！！
             self.PicToolBar_1 = NavigationBar(dr, self)
             # 初始化PicToolBar（本质为Wedgit），绑定到dr这个FigureCanvas上，然后将Toolbar绑到Layout上
             self.gridLayout_5.addWidget(self.PicToolBar_1)
@@ -381,6 +398,7 @@ class ThreadProcess(QtCore.QThread):
 
 class MyQtGraphicView(QtWidgets.QGraphicsView):
     Message_Drag_accept = QtCore.pyqtSignal(dict)
+    Message_DoubleClick = QtCore.pyqtSignal(int)
 
     def __init__(self, parent=None):
         super(MyQtGraphicView, self).__init__(parent)
@@ -397,6 +415,9 @@ class MyQtGraphicView(QtWidgets.QGraphicsView):
         self.Message_Drag_accept.emit({'title': e.mimeData().text(),
                                        'data': e.mimeData().text(),
                                        'Nvbar': False})
+
+    def mouseDoubleClickEvent(self, e):
+        self.Message_DoubleClick.emit(1)
 
 
 if __name__ == '__main__':

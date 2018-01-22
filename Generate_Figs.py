@@ -33,19 +33,22 @@ class MyFigureCanvas(FigureCanvas):
         test
     """
     def __init__(self, parent=None, width=10, height=10, dpi=100, plot_type='3d', **kwargs):
-        fig = Figure(figsize=(width, height), dpi=100)
-        super(MyFigureCanvas, self).__init__(fig)
+        self.fig = Figure(figsize=(width, height), dpi=100)
+        super(MyFigureCanvas, self).__init__(self.fig)
         self.kwargs = kwargs
         # self.data = data
         # self.parameter1 = para1
         # FigureCanvas.__init__(self, fig)  # 初始化父类   堆栈溢出问题！
         # self.setParent(parent)
         if plot_type == '2d':
-            self.axes = fig.add_subplot(111)
+            self.axes = self.fig.add_subplot(111)
         elif plot_type == '3d':
-            self.axes = fig.add_subplot(111, projection='3d')
+            self.axes = self.fig.add_subplot(111, projection='3d')
         elif plot_type == '2d-poly':
-            self.axes = fig.add_subplot(111, polar=True)
+            self.axes = self.fig.add_subplot(111, polar=True)
+        elif plot_type == '2d-multi':
+            self.i = 0
+            pass
 
     def plot_acc_response_(self):
         '''
@@ -112,14 +115,41 @@ class MyFigureCanvas(FigureCanvas):
         :return:
         '''
 
+        pos = [0.1, 0.1, 0.6, 0.8]
+        colors = ['r', 'b', 'g', 'y']
+        font_size = 10
+
+
+        if self.i == 0:
+            self.axes = self.fig.add_axes(pos, axisbg='w', label=kwargs['legend'])
+            self.axes.tick_params(axis='x', colors='black', labelsize=10)
+        else:
+            self.axes = self.fig.add_axes(pos, axisbg='none', label=kwargs['legend'])
+            # self.axes.set_xticks([])
+
         self.raw_data = kwargs['raw_data']  # 注意！！！！
+        self.time = kwargs['time']
         self.fig_title = self.kwargs['title']
-        self.axes.plot(self.raw_data)
-        self.axes.set_title(self.fig_title)
-        self.axes.set_xlabel('time (s)', fontsize=12)
-        self.axes.set_ylabel('VehicleSpd (km/h)', fontsize=12)
-        self.axes.grid(True)
-        self.axes.legend(kwargs['legend'])
+        self.axes.spines['right'].set_position(('outward', 60 * self.i))
+
+        self.axes.plot(self.time, self.raw_data, linewidth=1, color=colors[self.i])
+        self.axes.yaxis.set_ticks_position('right')
+        self.axes.tick_params(axis='y', colors=colors[self.i])
+        self.axes.spines['right'].set_color(colors[self.i])
+        self.axes.spines['right'].set_linewidth(2)
+        self.axes.set_ylabel(kwargs['legend'], fontsize=font_size, color=colors[self.i])
+        self.axes.yaxis.set_label_position("right")
+
+        self.i += 1
+
+        # self.axes.plot(self.raw_data)
+        # self.axes.set_title(self.fig_title)
+        # self.axes.set_xlabel('time (s)', fontsize=12)
+        # self.axes.set_ylabel('VehicleSpd (km/h)', fontsize=12)
+        # self.axes.lines[-1].set_label(kwargs['legend'])  # 将最近添加的那根曲线命名
+        # self.axes.grid(True)
+        # self.axes.legend(kwargs['legend'])
+
 
     def plot_radar_map_(self):
         self.theta = self.kwargs['theta']
