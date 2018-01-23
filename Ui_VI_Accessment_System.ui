@@ -291,11 +291,6 @@
           </item>
           <item>
            <property name="text">
-            <string>DecelerationStrip</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
             <string>GroovedCementRoad</string>
            </property>
           </item>
@@ -369,6 +364,11 @@
           <item>
            <property name="text">
             <string>SinRoad</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>SpeedBump</string>
            </property>
           </item>
           <item>
@@ -532,7 +532,7 @@
            </item>
            <item>
             <property name="text">
-             <string>DecelerationStrip</string>
+             <string>SpeedBump</string>
             </property>
            </item>
           </item>

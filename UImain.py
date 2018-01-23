@@ -13,6 +13,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from Ui_VI_Accessment_System import Ui_VI_Accessment_System  # 界面源码
 from Generate_Figs import *  # 绘图函数
 from Calculation_function_ import *   # 计算函数
+import re  # 正则表达式
 
 
 class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
@@ -22,13 +23,14 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
         self.setupUi(self)
         self.initial()
 
-        self.menu_InputData.triggered.connect(self.load_sysgain_data)
+        self.menu_InputData.triggered.connect(self.operation_condition_detect)
         self.actionOveralwidget.triggered.connect(lambda: self.change_main_page(0))
         self.actionDataEdit.triggered.connect(lambda: self.change_main_page(1))
         self.actionRatingDetails.triggered.connect(lambda: self.change_main_page(2))
         self.actionSettings.triggered.connect(lambda: self.change_main_page(3))
         self.actionComparison.triggered.connect(lambda: self.change_main_page(4))
         self.treeWidget.clicked.connect(self.select_tree_nodes)
+        self.treeWidget_2.clicked.connect(self.select_tree2_nodes)
         self.treeWidget_3.clicked.connect(self.select_tree3_nodes)
         self.pushButton_compare.clicked.connect(self.compare_radar_pic)
         self.pushButton_3.clicked.connect(self.button_clicked)  # test
@@ -122,12 +124,41 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
 
     # ---------------------------- 回调函数 -----------------------------------------
     # -----|主菜单
-    def load_sysgain_data(self):
-        filepath = QFileDialog.getOpenFileName(self, filter='*.csv')
-        filepath_full = filepath[0]
-        self.MainProcess_thread = ThreadProcess(method='sg_cal_thread', filepath=filepath_full)
-        self.MainProcess_thread.Message_Finish.connect(self.show_ax_pictures)
+    def operation_condition_detect(self):
+        '''
+        Find the operation functions to be calculated
+        :return:
+        '''
+        filepath = QFileDialog.getOpenFileNames(self, filter='*.csv')
+        filepath_list = filepath[0]
+        dict_of_condition = {'SyGa': 'load_sysgain_data',
+                             'SB': 'load_speedbump_data'}
+        operation_condition = ''
+        for i in filepath_list:
+            try:
+                filename = re.match(r'^([0-9a-zA-Z/:_.\u4e00-\u9fa5]+)/'  # 文件夹
+                                    r'([0-9a-zA-Z]+)_([0-9a-zA-Z]+)_([0-9a-zA-Z]+)_'
+                                    r'([0-9a-zA-Z]+)_([0-9]+)_([a-zA-Z]+).(csv)$', i)  # 文件名
+                operation_condition = filename.group(5)
+            except Exception as e:
+                print(e)
+                print('正则字符匹配错误<——FROM: operation_condition_detect()')
+            try:
+                getattr(self, dict_of_condition[operation_condition], 'nothing')(i)   # 同时调用时，线程命名要有差异，否则会出错
+            except BaseException as e:
+                print(e)
+
+    def load_sysgain_data(self, filepath):
+        # filepath = QFileDialog.getOpenFileName(self, filter='*.csv')
+        # filepath_full = filepath[0]
+        self.MainProcess_thread = ThreadProcess(method='sg_cal_thread', filepath=filepath)
+        self.MainProcess_thread.Message_Finish.connect(self.show_ax_pictures_sg)
         self.MainProcess_thread.start()
+
+    def load_speedbump_data(self, filepath):
+        self.MainProcess_thread_sb = ThreadProcess(method='sb_cal_thread', filepath=filepath)
+        self.MainProcess_thread_sb.Message_Finish.connect(self.show_ax_pictures_sb)
+        self.MainProcess_thread_sb.start()
 
     # -----|--|主页面
     def change_main_page(self, index_page):
@@ -208,10 +239,11 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
                      'LongtiAcc': 'LongAccelG_M',
                      'time': 'Time_abs'}
         try:
-            self.PicToolBar.home()
+            self.PicToolBar.press(self.PicToolBar.home())
             self.dr.plot_raw_data(time=self.MainProcess_thread.ax_holder_SG.sysGain_class.rawdata[raw_index['time']].tolist(),
                                   raw_data=self.MainProcess_thread.ax_holder_SG.sysGain_class.rawdata[raw_index[dict_in['data']]].tolist(),
                                   legend=[dict_in['data']])
+            self.PicToolBar.dynamic_update()
         except Exception as e:
             print(e)
 
@@ -235,8 +267,16 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
         print(self.xyCoordinates)
 
     # -----|--|Rating Details 页面
+    def select_tree2_nodes(self):
+        tree_index = {'SystemGain': 0, 'SpeedBump': 1, 'Launch': 2}
+        s = self.treeWidget_2.currentItem().text(0)
+        try:
+            self.stackedWidget_2.setCurrentIndex(tree_index[s])
+        except Exception as e:
+            print(e)
+
     # -----|--|--|System Gain
-    def show_ax_pictures(self):  # System Gain 初始绘图函数
+    def show_ax_pictures_sg(self):  # System Gain 初始绘图函数
 
         # self.createContextMenu_sg_fig_view()
 
@@ -309,6 +349,18 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
             print('From function：change_handle_pictures')
         pass
 
+    # -----|--|--|Speed Bump
+    def show_ax_pictures_sb(self):
+        dr_filter_sb = MyFigureCanvas(width=13, height=3, plot_type='2d')
+        dr_filter_sb.plot_filter_fig_sb(self.MainProcess_thread_sb.ax_holder_SB.filter_data)
+        self.scene = QtWidgets.QGraphicsScene()
+        self.scene.addWidget(dr_filter_sb)
+        # self.PicToolBar_filter_sb = NavigationBar(dr_filter_sb, self)
+        # # 初始化PicToolBar（本质为Wedgit），绑定到dr这个FigureCanvas上，然后将Toolbar绑到Layout上
+        # self.gridLayout_5.addWidget(self.PicToolBar_filter_sb)
+        self.graphicsView_SB_data.setScene(self.scene)
+        self.graphicsView_SB_data.show()
+
     # -----|--|Settings 页面
     def select_tree3_nodes(self):
         tree_index = {'DQ': 0, 'Energy': 1}
@@ -375,6 +427,11 @@ class ThreadProcess(QtCore.QThread):
     def sg_cal_thread(self):
         self.ax_holder_SG = SystemGain(file_path=self.kwargs['filepath'])
         self.ax_holder_SG.sg_main()
+        self.Message_Finish.emit("计算完成！")
+
+    def sb_cal_thread(self):
+        self.ax_holder_SB = SpeedBump20(file_path=self.kwargs['filepath'], fs=500)
+        self.ax_holder_SB.sb_main()
         self.Message_Finish.emit("计算完成！")
 
     def show_raw_data(self):

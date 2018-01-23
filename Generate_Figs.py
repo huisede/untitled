@@ -170,4 +170,43 @@ class MyFigureCanvas(FigureCanvas):
             self.axes.set_title("Rating Comparison")
         self.axes.legend(self.legends)
 
+    def plot_original_fig_sb(self, original_data):
+        time_data = original_data.time_data
+        sr_x_data = original_data.sr_x_data
+        sr_y_data = original_data.sr_y_data
+        sr_z_data = original_data.sr_z_data
+
+        self.axes.plot(time_data, sr_x_data, color='black')
+        self.axes.plot(time_data, sr_y_data, color='red')
+        self.axes.plot(time_data, sr_z_data, color='blue')
+        exam_x = np.where(sr_x_data > 10)
+        exam_y = np.where(sr_y_data > 10)
+        exam_z = np.where(sr_z_data > 10)
+
+        if np.isnan(exam_x) == False:
+            for nn in exam_x:
+                self.axes.plot(time_data[nn], sr_x_data[nn], color='red', marker='x', markersize=18)
+                sr_x_data[nn] = 0
+        if np.isnan(exam_y) == False:
+            for nn in exam_y:
+                self.axes.plot(time_data[nn], sr_y_data[nn], color='red', marker='x', markersize=18)
+        if np.isnan(exam_z) == False:
+            for nn in exam_z:
+                self.axes.plot(time_data[nn], sr_z_data[nn], color='red', marker='x', markersize=18)
+
+        self.axes.set_xlabel('Time (s)', fontsize=20)
+        self.axes.set_ylabel('Acc (g)', fontsize=20)
+        self.axes.set_title('Speed bump 20kph', fontsize=20)
+
+    def plot_filter_fig_sb(self, filter_data):
+        time_data = filter_data.time_data
+        sr_x_filter = filter_data.sr_x_data
+        sr_y_filter = filter_data.sr_y_data
+        sr_z_filter = filter_data.sr_z_data
+        self.axes.plot(time_data, sr_x_filter, color='black')
+        self.axes.plot(time_data, sr_y_filter, color='red')
+        self.axes.plot(time_data, sr_z_filter, color='blue')
+        self.axes.set_xlabel('Time (s)', fontsize=10)
+        self.axes.set_ylabel('Acc (g)', fontsize=10)
+        self.axes.set_title('Speed bump 20kph', fontsize=12)
 
