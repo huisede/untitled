@@ -13,6 +13,8 @@ import numpy as np
 import pandas as pd
 from scipy import interpolate
 import matplotlib.pyplot as plt
+import scipy.signal as signal
+import peakutils
 
 
 class SystemGain(object):
@@ -446,6 +448,276 @@ class SystemGain(object):
         axg5.set_ylabel('Pedal (%)', fontsize=12)
         axg5.set_title('ShiftMap', fontsize=12)
         return shiftMap_Data
+
+
+class SpeedBump20(object):
+    """
+    Main class of SpeedBump20, contains all the thing needed to be calculated or plotted.
+    ******
+    the results of SpeedBump20 ：
+    sr_impact, aftershake, sw_impact,ee_peak1, ee_peak2,obj_original_fig,obj_filter_fig
+    ******
+    the fun and class of SpeedBump20:
+    fun sb_main————Main function of calculating speed bump, save  'self.sb_result'  to be called from UI.
+    fun cut_sb_data_srx————Data cutting function
+    stc fun cal_ee_peak————Calculate two value of peak-to-peak
+    stc fun rms_cal————Calculate rms
+
+    class OriginalFig/FilterFig————Wrapper class of the corresponding fig
+    class SbResult————A class that used to wrap all raw data and results
+    ******
+    plot fun of SpeedBump20:
+    stc fun plot_original_fig————Plotting method of original data fig. NEED TO BE REWRITE IN Generate_Figs.py
+    stc fun plot_filter_fig————Plotting method of filter data fig. NEED TO BE REWRITE IN Generate_Figs.py
+    """
+
+    def __init__(self, file_path, fs):
+        self.filepath = file_path
+        self.fs = fs
+
+        self.fig_original_data = {}
+        self.fig_filter_data = {}
+        self.table_result = pd.DataFrame()
+
+    def sb_main(self):
+        fs = self.fs
+        sb_20_data_ful = pd.read_csv(self.filepath, skiprows=range(0, 12), header=1)
+        sb_20_data_col = sb_20_data_ful.loc[:,
+                         ['SR-X DIC24X013', 'SR-Y DIC24X014', 'SR-Z DIC24X015', 'SW-X DIC24X016', 'SW-Y DIC24X017',
+                          'SW-Z DIC24X018', 'T']]
+        sb_csv_data = sb_20_data_col.drop_duplicates()
+
+        sr_x_data = np.array(sb_csv_data['SR-X DIC24X013'])
+        sr_y_data = np.array(sb_csv_data['SR-Y DIC24X014'])
+        sr_z_data = np.array(sb_csv_data['SR-Z DIC24X015'])
+        time_data = np.array(sb_csv_data['T'])
+        sw_x_data = np.array(sb_csv_data['SW-X DIC24X016'])
+        sw_y_data = np.array(sb_csv_data['SW-Y DIC24X017'])
+        sw_z_data = np.array(sb_csv_data['SW-Z DIC24X018'])
+        self.original_data = self.OriginalData(time_data, sr_x_data, sr_y_data, sr_z_data,sw_x_data,sw_y_data,sw_z_data)
+        [st, snd] = self.cut_sb_data_srx(sr_x_data)
+
+        # 滤波
+        b = signal.firwin(31, [1 * 2 / fs, 100 * 2 / fs], window=('kaiser', 0.5), pass_zero=False)
+        sr_x_filter1 = signal.convolve(sr_x_data, b)
+        sr_y_filter1 = signal.convolve(sr_y_data, b)
+        sr_z_filter1 = signal.convolve(sr_z_data, b)
+        w, gd = signal.group_delay((b, 1))
+        n_delay = int(round(np.mean(gd)))
+        st1 = int(round(st[0] + n_delay))
+        snd1 = int(round(snd[0] + n_delay))
+        self.filter_data = self.FilterData(sr_x_data, sr_y_data, sr_z_data, time_data, sw_x_data, sw_y_data,sw_z_data, st1, snd1, fs)
+
+        sr_impact = []
+        ee_peak1 = []
+        ee_peak2 =[]
+        after_shake = []
+        sw_impact = []
+
+        # SR_imapct计算
+        vdv_x = sum([i ** 4 for i in sr_x_filter1[st1:snd1]])
+        vdv_x = vdv_x ** 0.25
+        vdv_y = sum([i ** 4 for i in sr_y_filter1[st1:snd1]])
+        vdv_y = vdv_y ** 0.25
+        vdv_z = sum([i ** 4 for i in sr_z_filter1[st1:snd1]])
+        vdv_z = vdv_z ** 0.25
+        sr_impact.append((vdv_x ** 2 + vdv_y ** 2 + vdv_z ** 2) ** 0.5)
+
+        ee_peak11, ee_peak22 = self.cal_ee_peak(fs, sr_x_filter1, st1, snd1)
+        ee_peak1.append(ee_peak11)
+        ee_peak2.append(ee_peak22)
+
+        # aftershake计算
+        b2 = signal.firwin(16, [5 * 2 / fs, 30 * 2 / fs], window=('kaiser', 0.5), pass_zero=False)
+        sr_x_filter2 = signal.convolve(sr_x_data, b2)
+        sr_y_filter2 = signal.convolve(sr_y_data, b2)
+        sr_z_filter2 = signal.convolve(sr_z_data, b2)
+        w2, gd2 = signal.group_delay((b2, 1))
+        n_delay2 = round(np.mean(gd2))
+        st2 = int(st[0] + n_delay2)
+        snd2 = int(snd[0] + n_delay2)
+        rms_x = self.rms_cal(sr_x_filter2[st2:snd2])
+        rms_y = self.rms_cal(sr_y_filter2[st2:snd2])
+        rms_z = self.rms_cal(sr_z_filter2[st2:snd2])
+        after_shake.append((rms_x ** 2 + rms_y ** 2 + rms_z ** 2) ** 0.5)
+
+        # SW_Impact计算
+        sw_x_filter1 = signal.convolve(sw_x_data, b)
+        sw_y_filter1 = signal.convolve(sw_y_data, b)
+        sw_z_filter1 = signal.convolve(sw_z_data, b)
+        vdv_wx = sum([i ** 4 for i in sw_x_filter1[st1:snd1]])
+        vdv_wx = vdv_wx ** 0.25
+        vdv_wy = sum([i ** 4 for i in sw_y_filter1[st1:snd1]])
+        vdv_wy = vdv_wy ** 0.25
+        vdv_wz = sum([i ** 4 for i in sw_z_filter1[st1:snd1]])
+        vdv_wz = vdv_wz ** 0.25
+        sw_impact.append((vdv_wx ** 2 + vdv_wy ** 2 + vdv_wz ** 2) ** 0.5)
+
+        self.sb_table_result = pd.DataFrame({'sr_impact': sr_impact, 'after_shake': after_shake, 'sw_impact': sw_impact,'ee_peak1': ee_peak1, 'ee_peak2': ee_peak2})
+
+    @staticmethod
+    def cal_ee_peak(fs, sr_x_filter1, st1, snd1):
+        nn_delta = round(0.4 * fs)
+        # 先找到所有峰值点
+        sr_x_filter_cal = sr_x_filter1[st1:round(st1 / 2 + snd1 / 2)]
+        indexes = peakutils.indexes(sr_x_filter_cal, thres=0.5, min_dist=30)
+        indexes_sr_x = sorted(sr_x_filter_cal[indexes], reverse=True)
+        max_sr_x1 = indexes_sr_x[0]
+        index_max_sr_x1 = np.where(sr_x_filter_cal == max_sr_x1)
+        max_sr_x2 = indexes_sr_x[1]
+        index_max_sr_x2 = np.where(sr_x_filter_cal == max_sr_x2)
+        index_max_sr_x = int(np.array(min(index_max_sr_x1, index_max_sr_x2)))
+
+        max_sr_x = sr_x_filter_cal[index_max_sr_x]
+        min_sr_x = min(sr_x_filter_cal[index_max_sr_x:index_max_sr_x + 100])
+        index_min_sr_x = (sr_x_filter_cal[index_max_sr_x:snd1]).tolist().index(min_sr_x) + index_max_sr_x - 1
+        ee_peak1 = max_sr_x - min_sr_x
+
+        max_sr_x2 = max(sr_x_filter1[index_max_sr_x + nn_delta:snd1])
+        index_max_sr_x2 = sr_x_filter1[index_max_sr_x + nn_delta:snd1].tolist().index(
+            max_sr_x2) + index_max_sr_x + nn_delta - 1
+        min_sr_x2 = min(sr_x_filter1[index_max_sr_x2:snd1])
+        index_min_sr_x2 = (sr_x_filter1[index_max_sr_x:snd1]).tolist().index(min_sr_x2) + index_max_sr_x2 - 1
+        ee_peak2 = max_sr_x2 - min_sr_x2
+        return ee_peak1, ee_peak2
+
+    @staticmethod
+    def rms_cal(sr_x):
+        length = len(sr_x)
+        nn = np.array(sr_x)
+        nn2 = nn * nn
+        sum2 = nn2.sum()
+        var = sum2 / length
+        return var ** 0.5
+
+    def cut_sb_data_srx(self, sr_x):
+        # 对数据进行切割，找到满足条件的位置，这里将数据长度大于650的进行了删除
+        # 手动截取功能暂未实现
+        st = []
+        snd = []
+        nn = 0
+        ll = len(sr_x)
+        while nn < ll:
+            active = True
+            NN = 0
+            while active:
+                for i in range(1, 6):
+                    rms = self.rms_cal(sr_x[nn + i - 1:nn + 9 + i - 1])
+                    if rms > 0.3:
+                        NN = NN + 1
+                    else:
+                        NN = 0
+                if NN >= 4 or nn > ll:
+                    active = False
+                else:
+                    nn = nn + 1
+            if nn > 4000:
+                aa = 1
+            st.append(nn)
+            NN = 0
+            nn = nn + 400
+            active = True
+            while active:
+                for i in range(1, 5):
+                    rms = self.rms_cal(sr_x[nn:nn + 9])
+                    if rms < 0.3:
+                        NN = NN + 1
+                    else:
+                        NN = 0
+                if NN >= 3 or nn > ll:
+                    active = False
+                else:
+                    nn = nn + 1
+            snd.append(nn)
+
+        for i in range(1, len(st)):
+            if snd[i] - st[i] > 650:
+                snd.remove(snd(i))
+                st.remove(st(i))
+        return st, snd
+
+    class SbResult:
+        def __init__(self, sr_impact, after_shake, sw_impact, ee_peak1, ee_peak2, obj_original_fig, obj_filter_fig):
+            self.sr_impact = sr_impact
+            self.after_shake = after_shake
+            self.sw_impact = sw_impact
+            self.ee_peak1 = ee_peak1
+            self.ee_peak2 = ee_peak2
+            self.obj_original_fig = obj_original_fig
+            self.obj_filter_fig = obj_filter_fig
+
+    class OriginalData:
+        def __init__(self, time_data, sr_x_data, sr_y_data, sr_z_data,sw_x_data,sw_y_data,sw_z_data):
+            self.time_data = time_data
+            self.sr_x_data = sr_x_data
+            self.sr_y_data = sr_y_data
+            self.sr_z_data = sr_z_data
+            self.sw_x_data = sw_x_data
+            self.sw_y_data = sw_y_data
+            self.sw_z_data = sw_z_data
+
+    class FilterData:
+        def __init__(self, sr_x_filter, sr_y_filter, sr_z_filter, time_data, sw_x_filter, sw_y_filter, sw_z_filter, st1,snd1, fs):
+            self.sr_x_data = sr_x_filter[st1 - 1 * fs:snd1 + 1 * fs]
+            self.sr_y_data = sr_y_filter[st1 - 1 * fs:snd1 + 1 * fs]
+            self.sr_z_data = sr_z_filter[st1 - 1 * fs:snd1 + 1 * fs]
+            self.time_data = time_data[st1 - 1 * fs:snd1 + 1 * fs]
+            self.sw_x_data = sw_x_filter[st1 - 1 * fs:snd1 + 1 * fs]
+            self.sw_y_data = sw_y_filter[st1 - 1 * fs:snd1 + 1 * fs]
+            self.sw_z_data = sw_z_filter[st1 - 1 * fs:snd1 + 1 * fs]
+            self.st1 = st1
+            self.snd1 = snd1
+
+    @staticmethod
+    def plot_original_fig(original_data):
+        time_data = original_data.time_data
+        sr_x_data = original_data.sr_x_data
+        sr_y_data = original_data.sr_y_data
+        sr_z_data = original_data.sr_z_data
+        fig1 = plt.figure()
+        ax1 = fig1.add_subplot(111)
+        plt.xticks(fontsize=20)
+        plt.yticks(fontsize=20)
+        ax1.plot(time_data, sr_x_data, color='black')
+        ax1.plot(time_data, sr_y_data, color='red')
+        ax1.plot(time_data, sr_z_data, color='blue')
+        exam_x = np.where(sr_x_data > 10)
+        exam_y = np.where(sr_y_data > 10)
+        exam_z = np.where(sr_z_data > 10)
+
+        if np.isnan(exam_x) == False:
+            for nn in exam_x:
+                ax1.plot(time_data[nn], sr_x_data[nn], color='red', marker='x', markersize=18)
+                sr_x_data[nn] = 0
+        if np.isnan(exam_y) == False:
+            for nn in exam_y:
+                ax1.plot(time_data[nn], sr_y_data[nn], color='red', marker='x', markersize=18)
+        if np.isnan(exam_z) == False:
+            for nn in exam_z:
+                ax1.plot(time_data[nn], sr_z_data[nn], color='red', marker='x', markersize=18)
+        ax1.set_xlabel('Time (s)', fontsize=20)
+        ax1.set_ylabel('Acc (g)', fontsize=20)
+        ax1.set_title('Speed bump 20kph', fontsize=20)
+        plt.show()
+
+    @staticmethod
+    def plot_filter_fig(filter_data):
+        # fig2截取数据的图片
+        time_data = filter_data.time_data
+        sr_x_filter = filter_data.sr_x_data
+        sr_y_filter = filter_data.sr_y_data
+        sr_z_filter = filter_data.sr_z_data
+        fig2 = plt.figure()
+        ax2 = fig2.add_subplot(111)
+        plt.xticks(fontsize=20)
+        plt.yticks(fontsize=20)
+        ax2.plot(time_data, sr_x_filter, color='black')
+        ax2.plot(time_data, sr_y_filter, color='red')
+        ax2.plot(time_data, sr_z_filter, color='blue')
+        ax2.set_xlabel('Time (s)', fontsize=20)
+        ax2.set_ylabel('Acc (g)', fontsize=20)
+        ax2.set_title('Speed bump 20kph', fontsize=20)
+        plt.show()
 
 
 class RatingMap(object):

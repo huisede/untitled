@@ -48,7 +48,6 @@ class MyFigureCanvas(FigureCanvas):
             self.axes = self.fig.add_subplot(111, polar=True)
         elif plot_type == '2d-multi':
             self.i = 0
-            pass
 
     def plot_acc_response_(self):
         '''
@@ -119,37 +118,33 @@ class MyFigureCanvas(FigureCanvas):
         colors = ['r', 'b', 'g', 'y']
         font_size = 10
 
-
         if self.i == 0:
-            self.axes = self.fig.add_axes(pos, axisbg='w', label=kwargs['legend'])
+            self.axes = self.fig.add_axes(pos, axisbg='w', label=kwargs['legend'])  # 设置初始的图层底色为白色
             self.axes.tick_params(axis='x', colors='black', labelsize=10)
+            self.axes.set_xlabel('time (s)', fontsize=12)
         else:
-            self.axes = self.fig.add_axes(pos, axisbg='none', label=kwargs['legend'])
-            # self.axes.set_xticks([])
+            self.axes = self.fig.add_axes(pos, axisbg='none', label=kwargs['legend'])  # 设置随后的图层底色为透明
+            # self.axes.set_xticks([])   #写完后去掉注释
 
         self.raw_data = kwargs['raw_data']  # 注意！！！！
         self.time = kwargs['time']
         self.fig_title = self.kwargs['title']
-        self.axes.spines['right'].set_position(('outward', 60 * self.i))
-
+        self.axes.spines['right'].set_position(('outward', 60 * self.i))   # 图的右侧边框向外移动
+        self.axes.spines['right'].set_color(colors[self.i])
+        self.axes.spines['right'].set_linewidth(2)
         self.axes.plot(self.time, self.raw_data, linewidth=1, color=colors[self.i])
         self.axes.yaxis.set_ticks_position('right')
         self.axes.tick_params(axis='y', colors=colors[self.i])
-        self.axes.spines['right'].set_color(colors[self.i])
-        self.axes.spines['right'].set_linewidth(2)
         self.axes.set_ylabel(kwargs['legend'], fontsize=font_size, color=colors[self.i])
         self.axes.yaxis.set_label_position("right")
-
         self.i += 1
 
         # self.axes.plot(self.raw_data)
         # self.axes.set_title(self.fig_title)
-        # self.axes.set_xlabel('time (s)', fontsize=12)
         # self.axes.set_ylabel('VehicleSpd (km/h)', fontsize=12)
         # self.axes.lines[-1].set_label(kwargs['legend'])  # 将最近添加的那根曲线命名
         # self.axes.grid(True)
         # self.axes.legend(kwargs['legend'])
-
 
     def plot_radar_map_(self):
         self.theta = self.kwargs['theta']
