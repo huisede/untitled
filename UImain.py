@@ -44,6 +44,7 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
         self.verticalLayout_5.addWidget(self.graphicsView_2)
         self.graphicsView_2.Message_Drag_accept.connect(self.show_data_edit_drag_pictures)   # 拖拽重绘
         self.graphicsView_2.Message_DoubleClick.connect(self.highlight_signal)  # 双击高亮
+        self.initial_data_edit()
 
     # ---------------------------- 右键菜单 -----------------------------------------
 
@@ -79,15 +80,28 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
         self.graphicsView_3.actionC = self.graphicsView_3.contextMenu.addAction(QtGui.QIcon("./Image/DataIcon.png"), u"| Pedal Map")
         self.graphicsView_3.actionD = self.graphicsView_3.contextMenu.addAction(QtGui.QIcon("./Image/DataIcon.png"), u"| Shift Map")
         self.graphicsView_3.actionE = self.graphicsView_3.contextMenu.addAction(QtGui.QIcon("./Image/DataIcon.png"), u"| 香蕉图")
-        self.graphicsView_3.actionA.triggered.connect(lambda: self.change_handle_pictures('accresp',
+        self.graphicsView_3.actionF = self.graphicsView_3.contextMenu.addAction(QtGui.QIcon("./Image/DataIcon.png"), u"| 稳态车速")
+        self.graphicsView_3.actionA.triggered.connect(lambda: self.change_handle_pictures('Acceleration Curve',
                                                                                           'PicToolBar_1',
                                                                                           'graphicsView_3',
                                                                                           'gridLayout_5'))
-        self.graphicsView_3.actionB.triggered.connect(lambda: self.change_handle_pictures('launch',
+        self.graphicsView_3.actionB.triggered.connect(lambda: self.change_handle_pictures('Launch',
                                                                                           'PicToolBar_1',
                                                                                           'graphicsView_3',
                                                                                           'gridLayout_5'))
         self.graphicsView_3.actionC.triggered.connect(lambda: self.change_handle_pictures('Pedal Map',
+                                                                                          'PicToolBar_1',
+                                                                                          'graphicsView_3',
+                                                                                          'gridLayout_5'))
+        self.graphicsView_3.actionD.triggered.connect(lambda: self.change_handle_pictures('Shift Map',
+                                                                                          'PicToolBar_1',
+                                                                                          'graphicsView_3',
+                                                                                          'gridLayout_5'))
+        self.graphicsView_3.actionE.triggered.connect(lambda: self.change_handle_pictures('SystemGain Curve',
+                                                                                          'PicToolBar_1',
+                                                                                          'graphicsView_3',
+                                                                                          'gridLayout_5'))
+        self.graphicsView_3.actionF.triggered.connect(lambda: self.change_handle_pictures('Constant Speed',
                                                                                           'PicToolBar_1',
                                                                                           'graphicsView_3',
                                                                                           'gridLayout_5'))
@@ -100,15 +114,28 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
         self.graphicsView_4.actionC = self.graphicsView_4.contextMenu.addAction(QtGui.QIcon("./Image/DataIcon.png"), u"| Pedal Map")
         self.graphicsView_4.actionD = self.graphicsView_4.contextMenu.addAction(QtGui.QIcon("./Image/DataIcon.png"), u"| Shift Map")
         self.graphicsView_4.actionE = self.graphicsView_4.contextMenu.addAction(QtGui.QIcon("./Image/DataIcon.png"), u"| 香蕉图")
-        self.graphicsView_4.actionA.triggered.connect(lambda: self.change_handle_pictures('accresp',
+        self.graphicsView_4.actionF = self.graphicsView_4.contextMenu.addAction(QtGui.QIcon("./Image/DataIcon.png"), u"| 稳态车速")
+        self.graphicsView_4.actionA.triggered.connect(lambda: self.change_handle_pictures('Acceleration Curve',
                                                                                           'PicToolBar_2',
                                                                                           'graphicsView_4',
                                                                                           'gridLayout_17'))
-        self.graphicsView_4.actionB.triggered.connect(lambda: self.change_handle_pictures('launch',
+        self.graphicsView_4.actionB.triggered.connect(lambda: self.change_handle_pictures('Launch',
                                                                                           'PicToolBar_2',
                                                                                           'graphicsView_4',
                                                                                           'gridLayout_17'))
         self.graphicsView_4.actionC.triggered.connect(lambda: self.change_handle_pictures('Pedal Map',
+                                                                                          'PicToolBar_2',
+                                                                                          'graphicsView_4',
+                                                                                          'gridLayout_17'))
+        self.graphicsView_4.actionD.triggered.connect(lambda: self.change_handle_pictures('Shift Map',
+                                                                                          'PicToolBar_2',
+                                                                                          'graphicsView_4',
+                                                                                          'gridLayout_17'))
+        self.graphicsView_4.actionE.triggered.connect(lambda: self.change_handle_pictures('SystemGain Curve',
+                                                                                          'PicToolBar_2',
+                                                                                          'graphicsView_4',
+                                                                                          'gridLayout_17'))
+        self.graphicsView_4.actionF.triggered.connect(lambda: self.change_handle_pictures('Constant Speed',
                                                                                           'PicToolBar_2',
                                                                                           'graphicsView_4',
                                                                                           'gridLayout_17'))
@@ -197,8 +224,30 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
         self.graphicsView.show()
 
     # -----|--|Data Edit 页面
+    def initial_data_edit(self):
+        self.dr = MyFigureCanvas(width=16, height=8, plot_type='2d-multi',
+                                 title='NAN')
+        self.scene = QtWidgets.QGraphicsScene()
+        self.scene.addWidget(self.dr)
+        self.PicToolBar = NavigationBar(self.dr, self)
+        # 初始化PicToolBar（本质为Wedgit），绑定到dr这个FigureCanvas上，然后将Toolbar绑到Layout上
+        self.verticalLayout_5.addWidget(self.PicToolBar)
+        self.graphicsView_2.setScene(self.scene)
+        self.graphicsView_2.setUpdatesEnabled(True)
+        self.graphicsView_2.setViewportUpdateMode(0)
+        self.graphicsView_2.show()
+
+    def select_tree_nodes(self):
+        # tree_index = {'DQ': 0, 'Energy': 1, 'Launch': 2}
+        s = self.treeWidget.currentItem().text(0)
+        if s == 'Launch':
+            self.show_data_edit_common({'title': s, 'data': 'AccPed', 'Nvbar': True})
+        elif s == 'SpeedBump':
+            self.show_data_edit_sb({'title': s, 'data': 'AccPed', 'Nvbar': True})
+        pass
+
     @QtCore.pyqtSlot(dict)
-    def show_data_edit_pictures(self, dict_in):  # 原始数据编辑界面
+    def show_data_edit_common(self, dict_in):  # 原始数据编辑界面
         '''
 
         :param dict_in: Contains the specific input of the signal to plot
@@ -210,23 +259,18 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
                      'LongtiAcc': 'LongAccelG_M',
                      'time': 'Time_abs'}
         try:
-            self.dr = MyFigureCanvas(width=16, height=8, plot_type='2d-multi',
-                                     title=dict_in['title'])
+            self.dr.fig.clear()
+            self.dr.reset_i()
+        except Exception as e:
+            print(e)
+
+        try:
+            self.PicToolBar.press(self.PicToolBar.home())
             self.dr.plot_raw_data(time=self.MainProcess_thread.ax_holder_SG.sysGain_class.rawdata[raw_index['time']].tolist(),
                                   raw_data=self.MainProcess_thread.ax_holder_SG.sysGain_class.rawdata[raw_index[dict_in['data']]].tolist(),
                                   legend=[dict_in['data']])
-
-            self.scene = QtWidgets.QGraphicsScene()
-            self.scene.addWidget(self.dr)
-            if dict_in['Nvbar']:
-                self.PicToolBar = NavigationBar(self.dr, self)
-                # 初始化PicToolBar（本质为Wedgit），绑定到dr这个FigureCanvas上，然后将Toolbar绑到Layout上
-                self.verticalLayout_5.addWidget(self.PicToolBar)
-
-            self.graphicsView_2.setScene(self.scene)
-            self.graphicsView_2.setUpdatesEnabled(True)
-            self.graphicsView_2.setViewportUpdateMode(0)
-            self.graphicsView_2.show()
+            self.dr.axes.set_title('Launch', fontsize=14)    # 这句话想办法写到Generate_Figs里面
+            self.PicToolBar.dynamic_update()
 
             self.dr.mpl_connect('button_press_event', self.get_mouse_xy_plot)
         except Exception as e:
@@ -246,6 +290,14 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
             self.PicToolBar.dynamic_update()
         except Exception as e:
             print(e)
+            print('from show_data_edit_drag_pictures')
+
+    def show_data_edit_sb(self, dict_in):
+        self.dr.fig.clear()
+        self.dr.reset_i()
+        self.PicToolBar.press(self.PicToolBar.home())
+        self.dr.plot_original_fig_sb(self.MainProcess_thread_sb.ax_holder_SB.original_data)
+        self.PicToolBar.dynamic_update()
 
     def select_marker(self):
         QtCore.Qt.Key_Left
@@ -253,13 +305,6 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
 
     def highlight_signal(self):
 
-        pass
-
-    def select_tree_nodes(self):
-        # tree_index = {'DQ': 0, 'Energy': 1, 'Launch': 2}
-        s = self.treeWidget.currentItem().text(0)
-        if s == 'Launch':
-            self.show_data_edit_pictures({'title': s, 'data': 'AccPed', 'Nvbar': True})
         pass
 
     def get_mouse_xy_plot(self, event):
@@ -280,10 +325,9 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
 
         # self.createContextMenu_sg_fig_view()
 
-        dr = MyFigureCanvas(width=6, height=4, plot_type='3d',
-                            data=self.MainProcess_thread.ax_holder_SG.sysGain_class.accresponce.data,
-                            pedal_avg=self.MainProcess_thread.ax_holder_SG.sysGain_class.accresponce.pedal_avg)
-        dr.plot_acc_response_()
+        dr = MyFigureCanvas(width=8, height=6, plot_type='3d')
+        dr.plot_acc_response(data=self.MainProcess_thread.ax_holder_SG.sysGain_class.accresponce.data,
+                             ped_avg=self.MainProcess_thread.ax_holder_SG.sysGain_class.accresponce.pedal_avg)
         self.scene = QtWidgets.QGraphicsScene()
         self.scene.addWidget(dr)
         try:
@@ -300,9 +344,8 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
         except Exception as e:
             print(e)
 
-        dr_launch_ = MyFigureCanvas(width=6, height=4, plot_type='2d',
-                                    data=self.MainProcess_thread.ax_holder_SG.sysGain_class.launch.data)
-        dr_launch_.plot_launch_()
+        dr_launch_ = MyFigureCanvas(width=8, height=6, plot_type='2d')
+        dr_launch_.plot_launch(data=self.MainProcess_thread.ax_holder_SG.sysGain_class.launch.data)
         self.scene = QtWidgets.QGraphicsScene()
         self.scene.addWidget(dr_launch_)
         try:
@@ -319,20 +362,31 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
 
     def change_handle_pictures(self, pichandle, toolbar, graphicview, layout):  # SG切换图片
         if pichandle == 'Pedal Map':
-            dr = MyFigureCanvas(width=6, height=4, plot_type='2d',
-                                data=self.MainProcess_thread.ax_holder_SG.sysGain_class.pedalmap.data)
-            dr.plot_pedal_map_()
+            dr = MyFigureCanvas(width=8, height=6, plot_type='2d')
+            dr.plot_pedal_map(data=self.MainProcess_thread.ax_holder_SG.sysGain_class.pedalmap.data)
 
-        elif pichandle == 'launch':
-            dr = MyFigureCanvas(width=6, height=4, plot_type='2d',
-                                data=self.MainProcess_thread.ax_holder_SG.sysGain_class.launch.data)
-            dr.plot_launch_()
+        elif pichandle == 'Launch':
+            dr = MyFigureCanvas(width=8, height=6, plot_type='2d')
+            dr.plot_launch(data=self.MainProcess_thread.ax_holder_SG.sysGain_class.launch.data)
 
-        elif pichandle == 'accresp':
-            dr = MyFigureCanvas(width=6, height=4, plot_type='3d',
-                                data=self.MainProcess_thread.ax_holder_SG.sysGain_class.accresponce.data,
-                                pedal_avg=self.MainProcess_thread.ax_holder_SG.sysGain_class.accresponce.pedal_avg)
-            dr.plot_acc_response_()
+        elif pichandle == 'Acceleration Curve':
+            dr = MyFigureCanvas(width=8, height=6, plot_type='3d')
+            dr.plot_acc_response(data=self.MainProcess_thread.ax_holder_SG.sysGain_class.accresponce.data,
+                                 ped_avg=self.MainProcess_thread.ax_holder_SG.sysGain_class.accresponce.pedal_avg)
+
+        elif pichandle == 'Shift Map':
+            dr = MyFigureCanvas(width=8, height=6, plot_type='2d')
+            dr.plot_shift_map(data=self.MainProcess_thread.ax_holder_SG.sysGain_class.shiftmap.data)
+
+        elif pichandle == 'SystemGain Curve':
+            dr = MyFigureCanvas(width=8, height=6, plot_type='2d')
+            dr.plot_systemgain_curve(vehspd_sg=self.MainProcess_thread.ax_holder_SG.sysGain_class.systemgain.vehspd_sg,
+                                     acc_sg=self.MainProcess_thread.ax_holder_SG.sysGain_class.systemgain.acc_sg)
+
+        elif pichandle == 'Constant Speed':
+            dr = MyFigureCanvas(width=8, height=6, plot_type='2d')
+            dr.plot_constant_speed(vehspd_cs=self.MainProcess_thread.ax_holder_SG.sysGain_class.systemgain.vehspd_cs,
+                                   pedal_cs=self.MainProcess_thread.ax_holder_SG.sysGain_class.systemgain.pedal_cs)
 
         self.scene = QtWidgets.QGraphicsScene()
         self.scene.addWidget(dr)
@@ -360,6 +414,33 @@ class MainUiWindow(QMainWindow, Ui_VI_Accessment_System):
         # self.gridLayout_5.addWidget(self.PicToolBar_filter_sb)
         self.graphicsView_SB_data.setScene(self.scene)
         self.graphicsView_SB_data.show()
+        self.show_datatableview_sb(self.MainProcess_thread_sb.ax_holder_SB.sb_table_result)
+
+    def show_datatableview_sb(self, data_frame):
+        """
+        Function of showing calculation results in data_table
+
+        :param : data_list   List of result data to show (list)
+        :return: -
+        __author__ = 'Lu chao'
+        __revised__ = 20180124
+        """
+        self.model = QtGui.QStandardItemModel()
+        # self.model.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant('HH'))
+        # self.model.setHeaderData(2, QtCore.Qt.Horizontal, QtCore.QVariant("FF"))
+        self.model.setHorizontalHeaderLabels(data_frame.columns)
+        for i in range(data_frame.__len__()):
+            for j in range(data_frame.iloc[0].__len__()):
+                self.model.setItem(i, j, QtGui.QStandardItem(str(round(data_frame.iloc[i][j], 2))))
+                self.model.item(i, j).setTextAlignment(QtCore.Qt.AlignHCenter| QtCore.Qt.AlignVCenter)
+        # self.model.setItem(0,1,QtGui.QStandardItem('2'))
+        for index in range(self.model.columnCount()):
+            headItem = self.model.horizontalHeaderItem(index)
+            headItem.setFont(QtGui.QFont("song", 12, QtGui.QFont.Bold))
+            headItem.setForeground(QtGui.QBrush(QtCore.Qt.blue))
+            headItem.setTextAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.tableView_SB_result.setModel(self.model)
+        self.tableView_SB_result.resizeColumnsToContents()
 
     # -----|--|Settings 页面
     def select_tree3_nodes(self):
