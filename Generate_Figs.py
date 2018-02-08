@@ -1,6 +1,6 @@
-
 import matplotlib
 import numpy as np
+
 matplotlib.use("Qt5Agg")
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationBar
@@ -32,6 +32,7 @@ class MyFigureCanvas(FigureCanvas):
     test function
         test
     """
+
     def __init__(self, parent=None, width=10, height=10, dpi=100, plot_type='3d', **kwargs):
         self.fig = Figure(figsize=(width, height), dpi=100)
         super(MyFigureCanvas, self).__init__(self.fig)
@@ -219,7 +220,7 @@ class MyFigureCanvas(FigureCanvas):
         self.raw_data = kwargs['raw_data']  # 注意！！！！
         self.time = kwargs['time']
         self.fig_title = self.kwargs['title']
-        self.axes.spines['right'].set_position(('outward', 60 * self.i))   # 图的右侧边框向外移动
+        self.axes.spines['right'].set_position(('outward', 60 * self.i))  # 图的右侧边框向外移动
         self.axes.spines['right'].set_color(colors[self.i])
         self.axes.spines['right'].set_linewidth(2)
         self.axes.plot(self.time, self.raw_data, linewidth=1, color=colors[self.i])
@@ -302,6 +303,45 @@ class MyFigureCanvas(FigureCanvas):
         self.axes.set_xlabel('Time (s)', fontsize=10)
         self.axes.set_ylabel('Acc (g)', fontsize=10)
         self.axes.set_title('Speed bump 20kph', fontsize=14)
+
+    def plot_result_keyonff(self, key_on_off_fig, original_data):
+        # 作图，把计算得到的特征点标注在图中
+        index_st = key_on_off_fig.index_st
+        index_snd = key_on_off_fig.index_snd
+        index_crank_st = key_on_off_fig.index_crank_st
+        index_crank_snd = key_on_off_fig.index_crank_snd
+        index_flare = key_on_off_fig.index_flare
+        spd_flare = key_on_off_fig.spd_flare
+        time_data = original_data.time_data
+        spd_data = original_data.spd_data
+
+        self.axes.set_title('Result of key on and off', fontsize=14)
+        self.axes.set_xlabel('time', fontsize=12)
+        self.axes.set_ylabel('eng_spd', fontsize=12)
+        self.axes.plot(time_data, spd_data, color='blue', linewidth=2)
+
+        offset_x = 1
+        offset_y = 2
+        for NN in range(len(index_st)):
+            self.axes.plot(time_data[index_st[NN]], spd_data[index_st[NN]], color='red', marker='.', markersize=18,
+                           linewidth=2)
+            self.axes.text(time_data[index_st[NN]] + offset_x, spd_data[index_st[NN]] + offset_y, 'start')
+
+            self.axes.plot(time_data[index_snd[NN]], spd_data[index_snd[NN]], color='red', marker='^', markersize=10,
+                           linewidth=2)
+            self.axes.text(time_data[index_snd[NN]] + offset_x, spd_data[index_snd[NN]] + offset_y, 'end')
+
+            self.axes.plot(time_data[index_crank_st[NN]], spd_data[index_crank_st[NN]], color='b', marker='.',
+                           markersize=18, linewidth=2)
+            self.axes.text(time_data[index_crank_st[NN]] + offset_x, spd_data[index_crank_st[NN]] + offset_y, 'crank_start')
+
+            self.axes.plot(time_data[index_crank_snd[NN]], spd_data[index_crank_snd[NN]], color='b', marker='^',
+                           markersize=10, linewidth=2)
+            self.axes.text(time_data[index_crank_snd[NN]] + offset_x, spd_data[index_crank_snd[NN]] + offset_y, 'crank_end')
+
+            self.axes.plot(time_data[index_flare[NN]], spd_flare[NN], color='black', marker='.', markersize=18,
+                           linewidth=2)
+            self.axes.text(time_data[index_flare[NN]] + offset_x, spd_data[index_flare[NN]] + offset_y, 'flare')
 
     def reset_i(self):
         self.i = 0

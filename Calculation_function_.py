@@ -695,11 +695,11 @@ class SystemGain(object):
                 pedal_avg.append(np.mean(pedal_data[r_edge_vehspd[j]:t_edge_vehspd[j]]))
 
         for j in range(0, len(r_edge_pedal)):
-            if (t_edge_pedal[j] - r_edge_pedal[j] > 1000) & (
-                        np.cov(pedal_data[r_edge_pedal[j] + 20:t_edge_pedal[j] - 20]) < 3):
-                pedal_cut_index[0].append(r_edge_pedal[j])
-                pedal_cut_index[1].append(t_edge_pedal[j])
-                pedal_avg.append(np.mean(pedal_data[r_edge_pedal[j]:t_edge_pedal[j]]))
+                if t_edge_pedal[j] - r_edge_pedal[j] > 1000:
+                    if np.cov(pedal_data[r_edge_pedal[j] + 20:t_edge_pedal[j] - 20]) < 3:
+                        pedal_cut_index[0].append(r_edge_pedal[j])
+                        pedal_cut_index[1].append(t_edge_pedal[j])
+                        pedal_avg.append(np.mean(pedal_data[r_edge_pedal[j]:t_edge_pedal[j]]))
 
         return pedal_cut_index, pedal_avg
 
@@ -1003,7 +1003,10 @@ class SpeedBump20(object):
         nn = np.array(sr_x)
         nn2 = nn * nn
         sum2 = nn2.sum()
-        var = sum2 / length
+        if length != 0:
+            var = sum2 / length
+        else:
+            var = 0
         return var ** 0.5
 
     def cut_sb_data_srx(self, sr_x):
@@ -1134,6 +1137,190 @@ class SpeedBump20(object):
         ax2.set_ylabel('Acc (g)', fontsize=20)
         ax2.set_title('Speed bump 20kph', fontsize=20)
         plt.show()
+
+
+class KeyOnOff(object):
+    """
+    Main class of keyonoff, contains all the thing needed to be calculated or plotted.
+    ******
+    the results of keyonoff ：self.key_on_off_table_result
+    time_stable,spd_stable,rms_stable_engine_spd,time_crank,spd_crank_avg, spd_flare, time_flare,time_key_off
+    ******
+    the fun and class of keyonoff:
+    fun key_on_off_main————Main function of calculating KeyOnOff, get 'key_on_off_table_result'
+    fun data_cut_result_xls———— save cut results in 'key_on_off_data_cut_result.xls'
+    fun key_on_off_result_xls————save cal results in 'key_on_off_cal_result.xls'
+    stc fun data_validity———— apply data validity if no print and sys.exit(1)
+    stc fun rms_cal————Calculate rms
+
+    class OriginalData/KeyOnOffFig————Wrapper class of the corresponding fig
+    ******
+    plot fun of KeyOnOff:
+    stc fun plot_result————Plotting method of result fig. NEED TO BE REWRITE IN Generate_Figs.py
+    """
+
+    def __init__(self, file_path):
+        self.filepath = file_path
+        self.original_data = {}
+        self.key_on_off_table_result = pd.DataFrame()
+        self.key_on_off_fig = {}
+
+    def key_on_off_main(self):
+        engine_start_stop_data_ful = pd.read_csv(self.filepath, header=0)
+        engine_start_stop_data_ful_col = engine_start_stop_data_ful.loc[:,
+                                        ['Time (abs)', 'Engine Coolant Temp Response', 'EnSpd-IP31']]
+        engine_start_stop_data = engine_start_stop_data_ful_col.drop_duplicates()
+
+        time_data = np.array(engine_start_stop_data['Time (abs)'])
+        temp_data = np.array(engine_start_stop_data['Engine Coolant Temp Response'])
+        spd_data = np.array(engine_start_stop_data['EnSpd-IP31'])
+        self.original_data = self.OriginalData(time_data, temp_data, spd_data)
+
+        # 检测水温信号，水温小于70度视为无效
+        if self.data_validity(temp_data):
+            return
+
+        exam_st1 = np.where(spd_data[0:-2] == 0)
+        exam_st2 = np.where([spd_data[i + 1] > 0 for i in exam_st1])
+        st1 = exam_st1[0][exam_st2[1]]
+
+        exam_snd1 = np.where(spd_data[1:-1] == 0)
+        exam_snd2 = np.where([spd_data[i] > 0 for i in exam_snd1])
+        snd1 = exam_snd1[0][exam_snd2[1]] + 1
+
+        index_st = []
+        index_snd = []
+        spd_flare = []
+        time_flare = []
+        index_flare = []
+        spd_stable = []
+        rms_stable_engine_spd = []
+        time_stable_end = []
+        time_stable = []
+        cycle_time = []
+        time_crank = []
+        time_crank_end = []
+        spd_crank_avg = []
+        index_crank_st = []
+        index_crank_snd = []
+        time_key_off = []
+
+        for NN in range(len(snd1)):
+            # 开始计算指标
+
+            spd_cal = spd_data[st1[NN]:snd1[NN]]
+            time_cal = time_data[st1[NN]:snd1[NN]]
+
+            if time_cal[-1] - time_cal[0] < 2:
+                continue
+
+            # time&spd start & time&spd end
+            index_st.append(st1[NN])
+            index_snd.append(snd1[NN])
+
+            # time flare & spd_flare
+            ind_flare = np.where(spd_cal == max(spd_cal))
+            spd_flare.append(max(spd_cal))
+            time_flare.append(time_cal[ind_flare[0][0]] - time_cal[0])
+            index_flare.append(ind_flare[0][0] + st1[NN])
+
+            # stable engine speed & rms 稳态转速和RMS值
+            spd_stable_cal = spd_cal[snd1[NN] - 90 - st1[NN] + 1:snd1[NN] - 35 - st1[NN] + 1]
+            stable_engine_spd = np.mean(spd_stable_cal)
+            rms_stable_engine_spd.append(self.rms_cal(spd_stable_cal))
+            spd_stable.append(stable_engine_spd)
+
+            # time stable end
+            ind_time_stable_end = np.where(abs(spd_cal - stable_engine_spd) < 10)
+            time_stable_end.append(time_cal[ind_time_stable_end[0][-1]] - time_cal[0])
+
+            # 发动机熄火时间
+            time_key_off.append(time_cal[-1] - time_cal[ind_time_stable_end[0][-1]])
+
+            # time stable 发动机起动时间
+            ind_time_stable = np.where(spd_cal >= 0.6 * stable_engine_spd)
+            time_stable.append(time_cal[ind_time_stable[0][0]] - time_cal[0])
+
+            # cycle time 工况持续时间
+            cycle_time.append(time_cal[-1] - time_cal[0])
+
+            # crank_st_index & crank_snd_index
+            spd_cal1 = np.array(spd_cal)
+            time_cal1 = np.array(time_cal)
+            spd_diff = (spd_cal1[1:-1] - spd_cal1[0:-2]) / (time_cal1[1:-1] - time_cal1[0:-2])
+            spd_diff1 = np.append([0], spd_diff)
+            indexes = peakutils.indexes(spd_diff1, thres=0.5)
+            crank_st_index = int(min(indexes) + 1)
+            snd_index1 = np.where(spd_diff1 == max(spd_diff1))[0][0]
+            crank_snd_index = \
+            np.where(spd_diff1[crank_st_index:snd_index1] == min(spd_diff1[crank_st_index:snd_index1]))[0][
+                -1] + crank_st_index
+
+            # crank 指标计算
+            time_crank.append(time_cal[crank_snd_index] - time_cal[crank_st_index])
+            time_crank_end.append(time_cal[crank_snd_index] - time_cal[0])
+            spd_crank = np.mean(np.array(spd_cal[crank_st_index:crank_snd_index]))
+            spd_crank_avg.append(spd_crank)
+            index_crank_st.append(crank_st_index + st1[NN])
+            index_crank_snd.append(crank_snd_index + st1[NN])
+
+        self.key_on_off_table_result = pd.DataFrame(
+            {'Time_stable': time_stable, 'Spd_stable': spd_stable, 'rms_stable_engine_spd': rms_stable_engine_spd,
+             'time_crank': time_crank, 'spd_crank_avg': spd_crank_avg, 'spd_flare': spd_flare, 'time_flare': time_flare,
+             'time_key_off': time_key_off})
+
+        self.key_on_off_fig = self.KeyOnOffFig(index_st, index_snd, index_crank_st, index_crank_snd, index_flare,
+                                               spd_flare)
+
+    class OriginalData:
+        def __init__(self, time_data, temp_data, spd_data):
+            self.time_data = time_data
+            self.temp_data = temp_data
+            self.spd_data = spd_data
+
+    class KeyOnOffFig:
+        def __init__(self, index_st, index_snd, index_crank_st, index_crank_snd, index_flare, spd_flare):
+            self.index_st = index_st
+            self.index_snd = index_snd
+            self.index_crank_st = index_crank_st
+            self.index_crank_snd = index_crank_snd
+            self.index_flare = index_flare
+            self.spd_flare = spd_flare
+
+    def data_cut_result_xls(self):
+        # 导出截取的原始数据
+        index_st = self.key_on_off_fig.index_st
+        index_snd = self.key_on_off_fig.index_snd
+        time_data = self.original_data.time_data
+        spd_data = self.original_data.spd_data
+        file = pd.ExcelWriter('key_on_off_data_cut_result.xls')
+        for NN in range(len(index_st)):
+            data_cut_result = pd.DataFrame(
+                {'Eng_Speed': spd_data[index_st[NN]:index_snd[NN]], 'Time': time_data[index_st[NN]:index_snd[NN]]})
+            data_cut_result.to_excel(file, sheet_name='sheet' + str(NN + 1), index=False)
+        file.save()
+
+    def key_on_off_result_xls(self):
+        # 导出计算结果数据
+        file = pd.ExcelWriter('key_on_off_cal_result.xls')
+        self.key_on_off_table_result.to_excel(file, sheet_name='sheet1')
+        file.save()
+
+    @staticmethod
+    def rms_cal(sr_x):
+        length = len(sr_x)
+        nn = np.array(sr_x)
+        nn2 = nn * nn
+        sum2 = nn2.sum()
+        var = sum2 / length
+        return var ** 0.5
+
+    @staticmethod
+    def data_validity(temp_data):
+        exam_temp = np.where(temp_data > 70)
+        if np.isnan(exam_temp[0]).all() == 1:
+            print("无效数据")
+            return True
 
 
 class RatingMap(object):
